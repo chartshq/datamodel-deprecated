@@ -24,7 +24,8 @@ import createFields from './field-creator';
  * {@link https://en.wikipedia.org/wiki/Relational_algebra | relational algebra} operators as well as generic data
  * processing opearators.
  * DataModel extends {@link Relation} class which defines all the relational algebra opreators. DataModel gives
- * definition of generic data processing operators which are not relational algebra complient.
+ * definition of generic data processing operators which are not relational algebra complient but needed for ease of
+ * use.
  *
  * @public
  * @class
@@ -43,15 +44,16 @@ class DataModel extends Relation {
      *
      * @constructor
      * @example
-     * const data = loadData('cars.csv');
-     * const schema = [
+     *  const data = [
+     *      { Name:'chevrolet chevelle malibu', Miles_per_Gallo:18, Cylinders:8, Horsepower:130, Year:'1970' },
+     *      { Name:'ford fiesta', Miles_per_Gallon:36.1, Cylinders:4, Horsepower:66, Year:'1978' },
+     *      { Name:'bmw 320i', Miles_per_Gallon:21.5, Cylinders:4, Horsepower:110, Year:'1977' }
+     *  ];
+     *  const schema = [
      *      { name: 'Name', type: 'dimension' },
-     *      { name: 'Miles_per_Gallon', type: 'measure', unit : 'cm', scale: '1000', numberformat: val => `${val}G`},
+     *      { name: 'Miles_per_Gallon', type: 'measure', unit : 'gallon', numberformat: val => `${val}G`},
      *      { name: 'Cylinders', type: 'dimension' },
-     *      { name: 'Displacement', type: 'measure' },
      *      { name: 'Horsepower', type: 'measure' },
-     *      { name: 'Weight_in_lbs', type: 'measure' },
-     *      { name: 'Acceleration', type: 'measure' },
      *      { name: 'Year', type: 'dimension', subtype: 'datetime', format: '%Y' },
      *      { name: 'Origin', type: 'dimension' }
      * ];
