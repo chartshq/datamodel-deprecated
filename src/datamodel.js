@@ -30,7 +30,7 @@ import createFields from './field-creator';
  * @public
  * @class
  * @extends Relation
- * @memberof Datamodel
+ * @segment DataModel
  */
 class DataModel extends Relation {
     /**
@@ -44,6 +44,7 @@ class DataModel extends Relation {
      *
      * @constructor
      * @example
+     *  const DataModel = muze.DataModel; // Retrieves reference to DataModel from muze namespace
      *  const data = [
      *      { Name:'chevrolet chevelle malibu', Miles_per_Gallo:18, Cylinders:8, Horsepower:130, Year:'1970' },
      *      { Name:'ford fiesta', Miles_per_Gallon:36.1, Cylinders:4, Horsepower:66, Year:'1978' },
@@ -58,11 +59,13 @@ class DataModel extends Relation {
      *      { name: 'Origin', type: 'dimension' }
      * ];
      * const dm = new DataModel(data, schema, { name: 'Cars' });
-     * table(dm);
+     * printDM(dm); // internal function to print datamodel, available only in this interface
      *
      * @public
      *
-     * @param {Array.<Object> | string | Array.<Array>} data Input data in any of the mentioned formats
+     * @param {Array.<Object> | string | Array.<Array>} data Input data in any of the mentioned formats. Checkout
+     *      {@link /muze/docs/introduction-to-datamodel#populating-datamodel-from-different-formats-of-data | this}
+     *      example for practical example on how feed different data format.
      * @param {Array.<Schema>} schema Defination of the variables. Order of the variables in data and order of the
      *      variables in schema has to be same.
      * @param {object} [options] Optional arguments to specify more settings regarding the creation part
@@ -83,6 +86,7 @@ class DataModel extends Relation {
      * applied. All the measure fields in datamodel (variables in data) needs a reducer to handle aggregation.
      *
      * @public
+     * @static
      *
      * @return {ReducerStore} Singleton instance of {@link ReducerStore}.
      */
@@ -94,13 +98,23 @@ class DataModel extends Relation {
      * Retrieve the data attached to an instance in JSON format.
      *
      * @example
-     * // DataModel instance is already prepared and assigned to dm variable
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *  const data = dm.getData({
      *      order: 'column',
      *      formatter: {
      *          origin: (val) => val === 'European Union' ? 'EU' : val;
      *      }
      *  });
+     *  //@preamble_start
+     *  });
+     *  //@preamble_end
      *  console.log(data);
      *
      * @public
@@ -195,26 +209,41 @@ class DataModel extends Relation {
     }
 
     /**
-     * Groups the data using particular dimensions and by reducing measures. It expects a list of dimensions using which
+     * Groups the data using particular dimensions by reducing measures. It expects a list of dimensions using which
      * it projects the datamodel and perform aggregations to reduce the duplicate tuples. Refer this
-     * {@link link_to_one_example_with_group_by | document} to know the intuition behind groupBy.
+     * {@link /muze/docs/datamodel-operators#groupby | document} to know the intuition behind groupBy.
      *
-     * DataModel by default provides definition of few {@link reducer | Reducers}.
+     * DataModel by default provides definition of few {@link reducer | Reducers} for reducing a measure when
+     * aggregation is required for `groupBy`.
      * {@link ReducerStore | User defined reducers} can also be registered.
      *
      * This is the chained implementation of `groupBy`.
-     * `groupBy` also supports {@link link_to_compose_groupBy | composability}
+     * `groupBy` also supports {@link /muze/api/datamodel#compose-groupby| composability}.
      *
      * @example
-     * const groupedDM = dm.groupBy(['Year'], { horsepower: 'max' } );
-     * console.log(groupedDm);
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
+     *  const outputDM = dm.groupBy(['Year'], { horsepower: 'max' } );
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
+     * @text
+     * During `groupBy`, only the dimensions passed as the first parameter gets projected. However all the measures
+     * gets projected automatically whether its mentioned as second parameter or not.
      *
      * @public
      *
-     * @param {Array.<string>} fieldsArr - Array containing the name of dimensions
-     * @param {Object} [reducers={}] - A map whose key is the variable name and value is the name of the reducer. If its
-     *      not passed, or any variable is ommitted from the object, default aggregation function is used from the
-     *      schema of the variable.
+     * @param {Array.<string>} fieldsArr Array containing the name of dimensions using which groupBy should happen.
+     * @param {Object} [reducers={}] A simple key value pair whose key is the variable name and value is the name of the
+     *      reducer. If its not passed, or any variable is ommitted from the object, default aggregation function is
+     *      used from the schema of the variable.
      *
      * @return {DataModel} Returns a new DataModel instance after performing the groupby.
      */
@@ -238,9 +267,9 @@ class DataModel extends Relation {
     }
 
     /**
-     * Performs sorting operation on the current {@link DataModel} instance according to the specified sorting details.
-     * Like every other operator it doesn't mutate the current DataModel instance on which it was called, instead
-     * returns a new DataModel instance containing the sorted data.
+     * Performs sorting according to the specified sorting details.Like every other operator it doesn't mutate the
+     * current DataModel instance on which it was called, instead returns a new DataModel instance containing the sorted
+     * data.
      *
      * DataModel support multi level sorting by listing the variables using which sorting needs to be performed and
      * the type of sorting `ASC` or `DESC`.
@@ -249,39 +278,51 @@ class DataModel extends Relation {
      * level of sorting by `Acceleration` in `ASC` order.
      *
      * @example
-     * // here dm is the pre-declared DataModel instance containing the data of 'cars.json' file
-     * let sortedDm = dm.sort([
-     *    ["Origin", "DESC"]
-     *    ["Acceleration"] // Default value is ASC
-     * ]);
-     *
-     * console.log(dm.getData());
-     * console.log(sortedDm.getData());
-     *
-     * // Sort with a custom sorting function
-     * sortedDm = dm.sort([
-     *    ["Origin", "DESC"]
-     *    ["Acceleration", (a, b) => a - b] // Custom sorting function
-     * ]);
-     *
-     * console.log(dm.getData());
-     * console.log(sortedDm.getData());
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *  const data = params[0];
+     *  const schema = params[1];
+     *  const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
+     *  let outputDM = dm.sort([
+     *      ["Origin", "DESC"]
+     *      ["Acceleration"] // Default value is ASC
+     *  ]);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @text
-     * DataModel also provides another sorting mechanism out of the box where sort is applied to a variable using
-     * another variable which determines the order.
-     * Like the above DataModel contains three fields `Origin`, `Name` and `Acceleration`. Now, the data in this
-     * model can be sorted by `Origin` field according to the average value of all `Acceleration` for a
-     * particular `Origin` value.
+     * DataModel also provides another sorting mechanism out of the box where order is applied to a variable by
+     * comparing values of another variable.
+     * Assume an instance of DataModel created from {@link /static/cars.json | this} data. Now, the data in this
+     * model can be sorted by *Origin* field according to the average value of all *Acceleration* for a
+     * particular *Origin* value. We would expect an output where *Origin* with lowest average *Acceleration* would come
+     * first, then the next lower average, all the way to Origin with the highest average *Acceleration* is the last
+     * entry of the array.
      *
      * @example
-     * // here dm is the pre-declared DataModel instance containing the data of 'cars.json' file
-     * const sortedDm = dm.sort([
-     *     ['Origin', ['Acceleration', (a, b) => avg(...a.Acceleration) - avg(...b.Acceleration)]]
-     * ]);
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *  const data = params[0];
+     *  const schema = params[1];
+     *  const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
+     *  const outputDM = dm.sort([
+     *      ['Origin', ['Acceleration', (a, b) => avg(...a.Acceleration) - avg(...b.Acceleration)]]
+     *  ]);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
-     * console.log(dm.getData());
-     * console.log(sortedDm.getData());
+     * @text
+     * If `groupBy` is applied post sorting, then sorting order is destroyed.
      *
      * @public
      *
@@ -318,22 +359,39 @@ class DataModel extends Relation {
     }
 
      /**
-     * Creates a new variable calculated from existing variable. This method expects the defination of the newly created
-     * variable and a function which resolves the value of the new variable from existing variables.
+     * Creates a new variable calculated from existing variable. This method expects definition of the newly created
+     * variable and a function which resolves value of the new variable from existing variables.
      *
-     * Can create a new measure based on existing variables
+     * Creates a new measure based on existing variables
      * @example
-     *  // DataModel already prepared and assigned to dm vairable;
-     *  const newDm = dataModel.calculateVariable({
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
+     *  const outputDM = dm.calculateVariable({
      *      name: 'powerToWeight',
-     *      type: 'measure'
+     *      type: 'measure' // Schema of variable
      *  }, ['horsepower', 'weight_in_lbs', (hp, weight) => hp / weight ]);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
-     *
-     * Can create a new dimension based on existing variables
+     * Creates a new dimension based on existing variables
      * @example
-     *  // DataModel already prepared and assigned to dm vairable;
-     *  const child = dataModel.calculateVariable(
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
+     *  const outputDM= dm.calculateVariable(
      *     {
      *       name: 'Efficiency',
      *       type: 'dimension'
@@ -342,6 +400,10 @@ class DataModel extends Relation {
      *      else if (hp < 120) { return 'moderate'; }
      *      else { return 'high' }
      *  }]);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @public
      *
@@ -525,7 +587,8 @@ class DataModel extends Relation {
      *  const config = { binSize: 200, name: 'binnedHorsepower' }
      *  const binDM = dataModel.bin('horsepower', config);
      *
-     * @public
+     * @todo Fix interaction of binning and then make it public
+     * @private
      *
      * @param {String} name Name of measure which will be used to create bin
      * @param {Object} config Config required for bin creation
