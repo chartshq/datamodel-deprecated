@@ -1,14 +1,16 @@
 /**
- * Dateformat in schema helps DataModel to recognize DateTime (temporal) data. A variable is of type temporal can be
- * specified in schema
+ * `format` in schema provides a rich set of token using which almost any dateformat can be parsed in DataModel.
+ *
+ * A variable of type temporal can be specified in schema as
  * ```
  *  { name: 'name_of_variable', 'type': 'dimension', subtype: 'temporal' };
  * ```
- * DataModel recognizes two date format without specifying the `dateformat` property in schema
+ * DataModel recognizes two date format without specifying the `format` property in schema
  * - Date in miliseconds from epoch date i.e. the result of `new Date(2012, 10, 20).getDate()`
- * - Instance of JavaScript `Date`
+ * - JavaScript {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date | Date}
+ *      object.
  *
- * For any other date format, the format needs to be specified. Following are the tokens available to specify the
+ * For any other date format, the `format` needs to be specified. Following are the tokens available to specify the
  * format.
  * <table>
  *      <tr>
@@ -93,8 +95,10 @@
  *      </tr>
  * </table>
  *
- * In order to make DataModel recognize `1990-Sep-25` the format specification will be `%Y-%b-%e`.
+ * In order to make DataModel recognize `1990-Sep/25` the format specification will be `%Y-%b/%e`. Here `%` is a token
+ * identifier.
  *
  * @public
  * @namespace DataModel
+ * @segment DateFormat
  */
