@@ -3,7 +3,7 @@ import { defReducer, fnList } from '../operator';
 /**
  * A page level storage which stores, registers, unregisters reducers for all the datamodel instances. There is only one
  * reducer store available in a page. All the datamodel instances receive same instance of reducer store. DataModel
- * out of the box provides handful of {@link reducer | reducers} which can be used as reducer funciton.
+ * out of the box provides handful of {@link reducer | reducers} which can be used as reducer function.
  *
  * @public
  * @namespace DataModel
@@ -51,23 +51,34 @@ class ReducerStore {
      * A {@link reducer | reducer} has to be registered before it is used.
      *
      * @example
-     *  // find the mean squared value of a given set
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const DataModel = muze.DataModel;
+     *      const dm = new DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is retrieved
+     *  // from muze namespace and assigned to DataModel variable.
      *  const reducerStore = DataModel.Reducers();
      *
-     *  reducers.register('meanSquared', (arr) => {
+     *  reducerStore.register('meanSquared', (arr) => {
      *      const squaredVal = arr.map(item => item * item);
      *      let sum = 0;
      *      for (let i = 0, l = squaredVal.length; i < l; i++) {
-     *          sum += squaredVal[i++];
+     *          sum += squaredVal[i];
      *      }
-     *
      *      return sum;
-     *  })
+     *  });
      *
-     *  // datamodel (dm) is already prepared with cars.json
-     *  const dm1 = dm.groupBy(['origin'], {
+     *  const outputDM= dm.groupBy(['origin'], {
      *      accleration: 'meanSquared'
      *  });
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @public
      *

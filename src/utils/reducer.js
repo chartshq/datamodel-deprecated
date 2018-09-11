@@ -1,8 +1,10 @@
 /**
  * Reducer is just a simple function which takes an array of real numbers and returns a representative number by
- * reducing the array. A reducer can only be applied on a measure.
+ * reducing the array. A reducer can only be applied on a measure. When `groupBy` is applied on a DataModel, it
+ * performs aggregation on all measures with a reducer function. Reducer function for a measure can be set from schema
+ * or it can be overridden when `groupBy` is called.
  *
- * DataModel provided reducers which can be used out of the box
+ * DataModel provides reducers which can be used out of the box
  *  <table>
  *      <tr>
  *          <th>Reducer Name</th>
@@ -26,11 +28,11 @@
  *      </tr>
  *      <tr>
  *          <td>first</td>
- *          <td>returns the first number</td>
+ *          <td>returns the first number in an array</td>
  *      </tr>
  *      <tr>
  *          <td>last</td>
- *          <td>returns the last number</td>
+ *          <td>returns the last number in an array</td>
  *      </tr>
  *      <tr>
  *          <td>count</td>
@@ -46,7 +48,7 @@
  *      </tr>
  *  </table>
  *
- * @example
+ * ```
  * // An function to calculate mean squared value of an array.
  * function (arr) {
  *      const squaredVal = arr.map(item => item * item);
@@ -57,6 +59,7 @@
  *
  *      return sum;
  *  }
+ * ```
  *
  * @public
  * @namespace DataModel
