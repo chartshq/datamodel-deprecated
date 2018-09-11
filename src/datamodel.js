@@ -309,10 +309,13 @@ class DataModel extends Relation {
      *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
      *  const data = params[0];
      *  const schema = params[1];
+     *  const DataModel = muze.DataModel;
      *  const dm = new muze.DataModel(data, schema);
      *  //@preamble_end
      *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
-     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted
+     *  // from muze namespace and assigned to DataModel variable.
+     *  const avg = DataModel.Stats.avg;
      *  const outputDM = dm.sort([
      *      ['Origin', ['Acceleration', (a, b) => avg(...a.Acceleration) - avg(...b.Acceleration)]]
      *  ]);
