@@ -1,8 +1,12 @@
 /**
- * The wrapper class on top of the primitive value of a field.
+ * The wrapper class on top of the
+ * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Data_types | primitive} value of a
+ * field.
  *
- * @todo Need to have support for StringValue, NumberValue, DateTimeValue
- * and GeoValue. These types should expose predicate API mostly.
+ * @todo Need to have support for StringValue, NumberValue, DateTimeValue and GeoValue.
+ *
+ * @class Value
+ * @public
  */
 class Value {
 
@@ -24,7 +28,10 @@ class Value {
     }
 
   /**
-   * Returns the field value.
+   * Returns the underlaying wrapped value.
+   *
+   * @public
+   * @getter
    *
    * @return {*} Returns the current value.
    */
@@ -33,20 +40,21 @@ class Value {
     }
 
   /**
-   * Converts to human readable string.
+   * String representation of the underlying value. If there is a hint of string operations, this function gets called.
    *
    * @override
-   * @return {string} Returns a human readable string of the field value.
    *
+   * @return {string} Returns a human readable string of the field value.
    */
     toString () {
         return String(this.value);
     }
 
   /**
-   * Returns the value of the field.
+   * Returns the value of the field. If there is a hint of converting the value to integer, this gets called.
    *
    * @override
+   *
    * @return {*} Returns the field value.
    */
     valueOf () {
