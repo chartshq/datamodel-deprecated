@@ -8,7 +8,8 @@ import { DM_DERIVATIVES } from './constants';
  * Relation provides the definitions of basic operators of relational algebra like *selection*, *projection*, *union*,
  * *difference* etc.
  *
- * It is extended by {@link DataModel} to inherit the functionalities of relational algebra concept.
+ * It is extended by {@link DataModel} to inherit the functionalities of relational algebra concept. Its not recommended
+ * to instantiate this class and use it.
  *
  * @class
  * @public
