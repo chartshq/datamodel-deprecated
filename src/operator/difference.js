@@ -4,13 +4,44 @@ import { rowDiffsetIterator } from './row-diffset-iterator';
 import { isArrEqual } from '../utils/helper';
 
 /**
- * Performs the union operation between two dm instances.
+ * Difference operation only include rows which are present in the datamodel on which it was called but not on the
+ * one passed as argument.
  *
- * @todo Fix the conflicts between union and difference terminology here.
+ * @example
+ *  //@preamble_start
+ *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+ *      const data = params[0];
+ *      const schema = params[1];
+ *      const DataModel = muze.DataModel;
+ *      const dm = new DataModel(data, schema);
+ *  //@preamble_end
+ *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+ *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
+ *  // muze namespace and assigned to the variable DataModel.
  *
- * @param {dm} dm1 - The first dm instance.
- * @param {dm} dm2 - The second dm instance.
- * @return {dm} Returns the newly created dm after union operation.
+ *  // Creates a DataModel instance only including USA. Using chained version for conciseness.
+ *  const usaMakerDM = dm.select(fields => fields.Origin.value === 'USA');
+ *
+ *  const difference = DataModel.Operators.difference;
+ *  outputDM = difference(dm, usaMakerDM);
+ *  //@preamble_start
+ *  printDM(outputDM);
+ *  });
+ *  //@preamble_end
+ *
+ * @text
+ * This is functional version of `difference` operator. `difference` can also be used as
+ * {@link /muze/api/datamodel/functional-operator | chained operator}.
+ *
+ * @public
+ * @namespace DataModel
+ * @segment Operator
+ *
+ * @param {DataModel} leftDM Instance of DataModel from which the difference will be calculated. For the notation
+ *      (A - B), A is the leftDM
+ * @param {DataModel} rightDM Instance of DataModel which will be used to calculate the difference from the leftDM. For
+ *      the notation (A - B), B is the rightDM.
+ * @return {DataModel} New DataModel instance with the result of the operation
  */
 export function difference (dm1, dm2) {
     const hashTable = {};

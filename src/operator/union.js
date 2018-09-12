@@ -2,12 +2,47 @@ import DataModel from '../export';
 import { extend2 } from '../utils';
 import { rowDiffsetIterator } from './row-diffset-iterator';
 import { isArrEqual } from '../utils/helper';
+
 /**
- * Performs the union operation between two dm instances.
+ * Union operation can be termed as vertical stacking of all rows from both the DataModel instances, provided that both
+ * of the {@link DataModel} instances should have same column names.
  *
- * @param {dm} dm1 - The first dm instance.
- * @param {dm} dm2 - The second dm instance.
- * @return {dm} Returns the newly created dm after union operation.
+ * @example
+ *  //@preamble_start
+ *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+ *  const data = params[0];
+ *  const schema = params[1];
+ *  const DataModel = muze.DataModel;
+ *  const dm = new DataModel(data, schema);
+ *  //@preamble_end
+ *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+ *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
+ *  // muze namespace and assigned to the variable DataModel.
+ *
+ *  // Creates two small DataModel instance from the original DataModel instance, one only for european cars,
+ *  // another for cars from USA. Used the chain operation here for conciseness.
+ *  const usaMakerDM = dm.select(fields => fields.Origin.value === 'USA');
+ *  const euroMakerDM = dm.select(fields => fields.Origin.value === 'Europe');
+ *
+ *  const union = DataModel.Operators.union;
+ *  const outputDM = union(usaMakerDM, euroMakerDM);
+ *  //@preamble_start
+ *  printDM(outputDM);
+ *  });
+ *  //@preamble_end
+ *
+ * @text
+ * This is the functional version of `union` operator. `union` can also be used as
+ * {@link /muze/api/datamodel/union | chained operator}.
+ *
+ * @public
+ * @namespace DataModel
+ * @segment Operator
+ *
+ * @param {DataModel} topDM One of the two operands of union. Instance of DataModel.
+ * @param {DataModel} bottomDM Another operands of union. Instance of DataModel.
+ *
+ * @return {DataModel} New DataModel instance with the result of the operation.
  */
 export function union (dm1, dm2) {
     const hashTable = {};
