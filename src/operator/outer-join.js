@@ -3,12 +3,11 @@ import { JOINS } from '../constants';
 import { union } from './union';
 
 /**
- * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Left Outer Join} between two {@link DataModel}
- * instances(let's call them Left {@link DataModel} and Right {@link DataModel} ) is a special kind of join that ensures that all 
- * the tuples in the Left {@link DataModel} are present in the new {@link DataModel}. The tuples of the Left {@link DataModel}
- * which do not satisfy join condition will have values as NULL for attributes of the Right {@link DataModel}.
- * 
- * It works as the opposite of the Right Outer Join as all the tuples of only the Left {@link DataModel} are present in the joined {@link DataModel}
+ * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Left outer join} between two
+ * {@link DataModel} instances is a kind of join that ensures that all the tuples from the left {@link DataModel}
+ * are present in the resulatant {@link DataModel}. This operator takes a predicate which gets called for every
+ * combination of tuples (created by cartesian product). Based on the value of predicate the equality is established
+ * between two DataModel.
  *
  * @example
  *  //@preamble_start
@@ -22,7 +21,8 @@ import { union } from './union';
  *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
  *  // muze namespace and assigned to the variable DataModel.
  *
- *  // Creates two small DataModel instance from the original DataModel instance, which will be joined using left outer join.
+ *  // Creates two small DataModel instance from the original DataModel instance, which will be joined using left outer
+ *  // join.
  *  let makerDM = dm.groupBy(['Origin', 'Maker']).project(['Origin', 'Maker']);
  *  let nameDM = dm.project(['Name','Miles_per_Gallon']);
  *
@@ -49,12 +49,11 @@ export function leftOuterJoin (leftDm, rightDm, filterFn) {
 }
 
 /**
- * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Right Outer Join} between two {@link DataModel}
- * instances(let's call them Left {@link DataModel} and Right {@link DataModel} ) is a special kind of join that ensures that all 
- * the tuples in the Right {@link DataModel} are present in the new {@link DataModel}. The tuples of the Right {@link DataModel}
- * which do not satisfy join condition will have values as NULL for attributes of the Left {@link DataModel}.
- * 
- * It works as the opposite of the Left Outer Join as all the tuples of only the Right {@link DataModel} are present in the joined {@link DataModel}.
+ * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Right outer join} between two
+ * {@link DataModel} instances is a kind of join that ensures that all the tuples from the right {@link DataModel}
+ * are present in the resulatant {@link DataModel}. This operator takes a predicate which gets called for every
+ * combination of tuples (created by cartesian product). Based on the value of predicate the equality is established
+ * between two DataModel.
  *
  * @example
  *  //@preamble_start
@@ -68,7 +67,8 @@ export function leftOuterJoin (leftDm, rightDm, filterFn) {
  *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
  *  // muze namespace and assigned to the variable DataModel.
  *
- *  // Creates two small DataModel instance from the original DataModel instance, which will be joined using left outer join.
+ *  // Creates two small DataModel instance from the original DataModel instance, which will be joined using left outer
+ *  // join.
  *  let makerDM = dm.groupBy(['Origin', 'Maker']).project(['Origin', 'Maker']);
  *  let nameDM = dm.project(['Name','Miles_per_Gallon']);
  *
@@ -95,11 +95,12 @@ export function rightOuterJoin (dataModel1, dataModel2, filterFn) {
 }
 
 /**
- * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Full Outer Join} between two {@link DataModel}
- * instances(let's call them Left {@link DataModel} and Right {@link DataModel} ) is a special kind of join that ensures that all 
- * the tuples in both the {@link DataModels} are present in the new {@link DataModel}. The tuples of the Left {@link DataModel}
- * which do not satisfy join condition will have values as NULL for attributes of the Right {@link DataModel} and vice versa.
- * 
+ * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Full outer join} between two
+ * {@link DataModel} instances is a kind of join that ensures that all the tuples from the left {@link DataModel} and
+ * right {@link DataModel} are present in the resulatant {@link DataModel}. This operator takes a predicate which gets
+ * called for every combination of tuples (created by cartesian product). Based on the value of predicate the equality
+ * is established between two DataModel.
+ *
  * @example
  *  //@preamble_start
  *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
@@ -112,7 +113,8 @@ export function rightOuterJoin (dataModel1, dataModel2, filterFn) {
  *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
  *  // muze namespace and assigned to the variable DataModel.
  *
- *  // Creates two small DataModel instance from the original DataModel instance, which will be joined using left outer join.
+ *  // Creates two small DataModel instance from the original DataModel instance, which will be joined using left outer
+ *  // join.
  *  let makerDM = dm.groupBy(['Origin', 'Maker']).project(['Origin', 'Maker']);
  *  let nameDM = dm.project(['Name','Miles_per_Gallon']);
  *
