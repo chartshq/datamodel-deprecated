@@ -287,8 +287,8 @@ class DataModel extends Relation {
      *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
      *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *  let outputDM = dm.sort([
-     *      ["Origin", "DESC"]
-     *      ["Acceleration"] // Default value is ASC
+     *      ['Origin', 'DESC']
+     *      ['Acceleration'] // Default value is ASC
      *  ]);
      *  //@preamble_start
      *  printDM(outputDM);
