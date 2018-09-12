@@ -127,7 +127,7 @@ class Relation {
      *
      *  // Creates two small DataModel instance from the original DataModel instance, which will be joined.
      *  let makerDM = dm.groupBy(['Origin', 'Maker']).project(['Origin', 'Maker']);
-     *  let nameDM = dm.project(['Name','Miles_per_Gallon'])
+     *  let nameDM = dm.project(['Name','Miles_per_Gallon']);
      *
      *  let outputDM = makerDM.join(nameDM,
      *      (makerDM, nameDM) => makerDM.Maker.value === nameDM.Name.value.split(/\s/)[0]);
