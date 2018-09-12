@@ -46,7 +46,7 @@
  *  //@preamble_end
  *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
  *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
- *  muze namespace and assigned to the DataModel variable.
+ *  // muze namespace and assigned to the DataModel variable.
  *  const select = DataModel.Operators.select;
  *  usaCarsFn = select(fields => fields.Origin.value === 'USA');
  *  outputDM = usaCarsFn(dm);
@@ -277,7 +277,8 @@ export const groupBy = (...args) => dm => dm.groupBy(...args);
  * @param {Array.<Operators>} operators: An array of operation that will be applied on the
  * datatable.
  *
- * @returns {DataModel} Instance of resultant DataModel
+ * @return {PreparatorFunction} Function which expects an instance of DataModel on which the operator needs to be
+ *      applied.
  */
 export const compose = (...operations) =>
     (dm, config = { saveChild: true }) => {
