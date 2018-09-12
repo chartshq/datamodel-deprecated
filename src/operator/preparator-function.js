@@ -1,7 +1,7 @@
 /**
  * All the functional operators of DataModel works in similar way. They accepts arguments which are specific for a
  * operator and returns a function. This function is called PreparatorFunction. This function expects a DataModel
- * instance, performs the oprerator(s) on the instance and return an resultant DataModel instance.
+ * instance, performs the oprerator(s) on the instance and return a resultant DataModel instance.
  *
  * ```
  *  const project = DataModel.operators.project;
