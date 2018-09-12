@@ -91,7 +91,8 @@ export function leftOuterJoin (leftDm, rightDm, filterFn) {
  * @return {DataModel} New DataModel instance created after the left outer join operation.
  */
 export function rightOuterJoin (dataModel1, dataModel2, filterFn) {
-    return crossProduct(dataModel2, dataModel1, filterFn, false, JOINS.RIGHTOUTER);
+    return crossProduct(dataModel2, dataModel1, (leftDmFields, rightDmFields) =>
+        filterFn(rightDmFields, leftDmFields), false, JOINS.RIGHTOUTER);
 }
 
 /**
