@@ -1,12 +1,12 @@
 
 /**
  * DataModel's opearators are exposed as composable functional operators as well as chainable operators. Chainable
- * operators are called on the instances of {@link Datamodel} and {@link Relation} class.
+ * operators are called on the instances of {@link Datamodel} class.
  *
  * Those same operators can be used as composable operators from `DataModel.Operators` namespace.
  *
- * All these operators have similar behaviour. All these operators when called with the argument returns a function
- * which expects a DataModel instance.
+ * The procedure of invoking all these operators is consistent. All these operators when called with the argument
+ * returns a function which expects a DataModel instance.
  *
  * @public
  * @module Operators
@@ -14,9 +14,9 @@
  */
 
 /**
- * This is functional version of selection operator. {@link link_to_selection | Selection} is a row filtering operation.
- * It takes {@link SelectionPredicate | predicate} for filtering criteria and returns a function.
- * The returned function is called with the DataModel instance on which the action needs to be performed.
+ * This is functional version of selection operator. Selection is a row filtering operation. It takes
+ * {@link SelectionPredicate | predicate} for filtering criteria and returns a function. The returned function is called
+ * with the DataModel instance on which the action needs to be performed.
  *
  * {@link SelectionPredicate} is a function which returns a boolean value. For selection opearation the selection
  * function is called for each row of DataModel instance with the current row passed as argument.
@@ -28,23 +28,38 @@
  * resulatant datamodel.
  *
  * @warning
+ * Note
  * [Warn] Selection and rejection set is only a logical idea for concept explanation purpose.
  *
  * @error
- * [Error] `FilteringMode.ALL` is not a valid working mode for functional version of `select`. Its only avialable on the
- * chained version.
+ * Not all modes are valid
+ * `FilteringMode.ALL` is not a valid working mode for functional version of `select`. Its only avialable on the chained
+ * version.
  *
  * @example
- * const select = DataModel.Operators.select;
- * usaCarsFn = select(fields => fields.Origin.value === 'USA');
- * usaCarsDm = usaCarsFn(dm);
- * console.log(usaCarsDm);
+ *  //@preamble_start
+ *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+ *  const data = params[0];
+ *  const schema = params[1];
+ *  const DataModel = muze.DataModel;
+ *  const dm = new DataModel(data, schema);
+ *  //@preamble_end
+ *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+ *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
+ *  muze namespace and assigned to the DataModel variable.
+ *  const select = DataModel.Operators.select;
+ *  usaCarsFn = select(fields => fields.Origin.value === 'USA');
+ *  outputDM = usaCarsFn(dm);
+ *  //@preamble_start
+ *  printDM(outputDM);
+ *  });
+ *  //@preamble_end
  *
  * @public
  * @namespace DataModel
- * @module Operators
+ * @segment Operators
  *
- * @param {SelectionPredicate} selectFn - Predicate funciton which is called for each row with the current row
+ * @param {SelectionPredicate} selectFn - Predicate function which is called for each row with the current row
  *      ```
  *          function (row, i)  { ... }
  *      ```
@@ -58,10 +73,10 @@
 export const select = (...args) => dm => dm.select(...args);
 
 /**
- * This is functional version of projection operator. {@link link_to_projection | Projection} is a column filtering
- * operation.It expects list of fields name and either include those or exclude those based on {@link FilteringMode} on
- * the  resultant variable.It returns a function which is called with the DataModel instance on which the action needs
- * to be performed.
+ * This is functional version of projection operator. Projection is a column (field) filtering operation. It expects
+ * list of fields name and either include those or exclude those based on {@link FilteringMode} on the resultant
+ * dataModel. It returns a function which is called with the DataModel instance on which the action needs to be
+ * performed.
  *
  * Projection expects array of fields name based on which it creates the selection and rejection set. All the field
  * whose name is present in array goes in selection set and rest of the fields goes in rejection set.
@@ -70,15 +85,36 @@ export const select = (...args) => dm => dm.select(...args);
  * resulatant datamodel.
  *
  * @warning
+ * Note
  * Selection and rejection set is only a logical idea for concept explanation purpose.
  *
  * @error
+ * Not all modes are valid
  * `FilteringMode.ALL` is not a valid working mode for functional version of `select`. Its only avialable on the
  * chained version.
  *
+ * @example
+ *  //@preamble_start
+ *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+ *  const data = params[0];
+ *  const schema = params[1];
+ *  const DataModel = muze.DataModel;
+ *  const dm = new DataModel(data, schema);
+ *  //@preamble_end
+ *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+ *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
+ *  // muze namespace and assigned to the DataModel variable.
+ *  const project = DataModel.Operators.project;
+ *  usaCarsFn = project(['Name'], { mode: DataModel.FilteringMode.INVERSE });
+ *  outputDM = usaCarsFn(dm);
+ *  //@preamble_start
+ *  printDM(outputDM);
+ *  });
+ *  //@preamble_end
+ *
  * @public
  * @namespace DataModel
- * @module Operators
+ * @segment Operators
  *
  * @param {Array.<string | Regexp>} projField - An array of column names in string or regular expression.
  * @param {Object} [config] - An optional config to control the creation of new DataModel
@@ -127,7 +163,8 @@ export const project = (...args) => dm => dm.project(...args);
  *  const binnedDm = dataModel.bin('horsepower', config);
  *  const binnedDm = binFn(Dm);
  *
- * @public
+ * @todo Fix interaction of binning and then make it public
+ * @private
  * @namespace DataModel
  * @module Operators
  *
@@ -149,26 +186,40 @@ export const project = (...args) => dm => dm.project(...args);
 export const bin = (...args) => dm => dm.bin(...args);
 
 /**
- * This is functional version of `groupBy` operator.Groups the data using particular dimensions and by reducing
- * measures. It expects a list of dimensions using which it projects the datamodel and perform aggregations to reduce
- * the duplicate tuples. Refer this {@link link_to_one_example_with_group_by | document} to know the intuition behind
- * groupBy.
+ * This is functional version of `groupBy` operator. This operator groups the data using particular dimensions and by
+ * reducing measures. It expects a list of dimensions using which it projects the datamodel and perform aggregations to
+ * reduce the duplicate tuples. Refer {@link /muze/docs/datamodel-operators#groupby | this document} to know the
+ * intuition behind groupBy.
  *
  * DataModel by default provides definition of few {@link reducer | Reducers}.
  * {@link ReducerStore | User defined reducers} can also be registered.
  *
- * This is the chained implementation of `groupBy`.
- * `groupBy` also supports {@link link_to_compose_groupBy | composability}
- *
  * @example
- * const groupBy = DataModel.Operators.groupBy;
- * const groupedFn = groupBy(['Year'], { horsepower: 'max' } );
- * groupedDM = groupByFn(dm);
+ *  //@preamble_start
+ *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+ *  const data = params[0];
+ *  const schema = params[1];
+ *  const DataModel = muze.DataModel;
+ *  const dm = new DataModel(data, schema);
+ *  //@preamble_end
+ *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+ *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
+ *  // muze namespace and assigned to the DataModel variable.
+ *
+ *  const groupBy = DataModel.Operators.groupBy;
+ *  const groupedFn = groupBy(['Year'], { horsepower: 'max' } );
+ *  const outputDM = groupByFn(dm);
+ *  //@preamble_start
+ *  printDM(outputDM);
+ *  });
+ *  //@preamble_end
  *
  * @public
+ * @namespace DataModel
+ * @segment Operators
  *
- * @param {Array.<string>} fieldsArr - Array containing the name of dimensions
- * @param {Object} [reducers={}] - A map whose key is the variable name and value is the name of the reducer. If its
+ * @param {Array.<string>} fieldsArr Array containing the name of dimensions
+ * @param {Object} [reducers={}] A map whose key is the variable name and value is the name of the reducer. If its
  *      not passed, or any variable is ommitted from the object, default aggregation function is used from the
  *      schema of the variable.
  *
@@ -178,29 +229,46 @@ export const bin = (...args) => dm => dm.bin(...args);
 export const groupBy = (...args) => dm => dm.groupBy(...args);
 
 /**
- * Enables composing operators to run multiple operations and save group of operataion as named opration on a DataModel.
- * The resulting DataModel will be the result of all the operation provided. The operations provided will be executed in
- * a serial manner ie. result of one operation will be the input for the next operations (like pipe operator in unix).
+ * It enables you to create new operator by composing existing operators. The newly created operator is used like any
+ * other operator. The operations provided will be executed in a serial manner ie. result of one operation will be the
+ * input for the next operations (like pipe operator in unix).
  *
- * Suported operations in compose are
+ * Compose has added benefits which chaining does not provide. Like, if there are group of operators are involved to
+ * transform data, chaining would create so intermediate DataModel instances. If `compose` is used no intermediate
+ * DataModels are created.
+ *
+ * Suported operators in compose are
  * - `select`
  * - `project`
  * - `groupBy`
  * - `bin`
- * - `compose`
+ * - Any operator created using compose `compose`
  *
  * @example
- * const compose = DataModel.Operators.compose;
- * const select = DataModel.Operators.select;
- * const project = DataModel.Operators.project;
+ *  //@preamble_start
+ *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+ *  const data = params[0];
+ *  const schema = params[1];
+ *  const DataModel = muze.DataModel;
+ *  const dm = new DataModel(data, schema);
+ *  //@preamble_end
+ *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+ *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
+ *  // muze namespace and assigned to the DataModel variable.
+ *  const compose = DataModel.Operators.compose;
+ *  const select = DataModel.Operators.select;
+ *  const project = DataModel.Operators.project;
  *
- * let composedFn = compose(
- *    select(fields => fields.netprofit.value <= 15),
- *    project(['netprofit', 'netsales']));
+ *  let lowCylCarsFromUSADM= compose(
+ *      select(fields => fields.Origin.value === 'USA' && fields.Cylinders.value === '4' ),
+ *      project(['Origin', 'Cylinders'], { mode: DataModel.FilteringMode.INVERSE })
+ *  );
  *
- * const dataModel = new DataModel(data1, schema1);
- *
- * let composedDm = composedFn(dataModel);
+ *  const outputDM = lowCylCarsFromUSADM(dm);
+ *  //@preamble_start
+ *  printDM(outputDM);
+ *  });
+ *  //@preamble_end
  *
  * @public
  * @namespace DataModel

@@ -14,7 +14,7 @@ import { DM_DERIVATIVES } from './constants';
  * @class
  * @public
  * @module Relation
- * @namespace DataModel
+ * @segment DataModel
  */
 class Relation {
 
@@ -55,11 +55,11 @@ class Relation {
     }
 
     /**
-     * Retrieves the {@link Schema | schema} details for every {@link Field | field} as an array.
+     * Retrieves the {@link Schema | schema} details for every {@link Field | field} in an array format.
      *
      * @public
      *
-     * @return {Array.<Schema>} Array of fields schema.
+     * @return {Schema} Array of fields schema.
      *      ```
      *      [
      *          { name: 'Name', type: 'dimension' },
@@ -105,27 +105,40 @@ class Relation {
     }
 
     /**
-     * Performs {@link link_of_cross_product | cross-product} between two {@link DataModel} instances and returns a
-     * new {@link DataModel} instance containing the results. This operation is also called theta join.
+     * Performs {@link https://en.wikipedia.org/wiki/Cartesian_product | cross-product} between two {@link DataModel}
+     * instances with an optional predicate which determines which tuples should be included and returns a new
+     * {@link DataModel} instance containing the results. This operation is also called theta join.
      *
      * Cross product takes two set and create one set where each value of one set is paired with each value of another
      * set.
      *
-     * This method takes an optional predicate which filters the generated result rows. If the predicate returns true
-     * the combined row is included in the resulatant table.
+     * This method takes an optional predicate which filters the generated result rows. The predicate is called for
+     * every tuple. If the predicate returns true the combined row is included in the resulatant table.
      *
      * @example
-     *  let originDM = dm.project(['Origin','Origin_Formal_Name']);
-     *  let carsDM = dm.project(['Name','Miles_per_Gallon','Origin'])
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *
-     *  console.log(carsDM.join(originDM)));
+     *  // Creates two small DataModel instance from the original DataModel instance, which will be joined.
+     *  let makerDM = dm.groupBy(['Origin', 'Maker']).project(['Origin', 'Maker']);
+     *  let nameDM = dm.project(['Name','Miles_per_Gallon'])
      *
-     *  console.log(carsDM.join(originDM,
-     *      obj => obj.[originDM.getName()].Origin === obj.[carsDM.getName()].Origin));
+     *  let outputDM = makerDM.join(nameDM,
+     *      (makerDM, nameDM) => makerDM.Maker.value === nameDM.Name.value.split(/\s/)[0]);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @text
-     * This is chained version of `join` operator. `join` can also be used as
-     * {@link link_to_join_op | functional operator}.
+     * This is the most genereic version of joining. There are few variations of join which are exposed as
+     * {@link muze/api/datamodel#functional-operators | functional operator}.
      *
      * @public
      *
@@ -139,18 +152,33 @@ class Relation {
     }
 
     /**
-     * {@link natural_join | Natural join} is a special kind of cross-product join where filtering of rows are performed
-     * internally by resolving common fields are from both table and the rows with common value are included.
+     * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra | Natural join} is a special kind
+     * of joining where filtering of rows are performed internally by resolving common fields are from both table and
+     * the rows with common value are included.
      *
      * @example
-     *  let originDM = dm.project(['Origin','Origin_Formal_Name']);
-     *  let carsDM = dm.project(['Name','Miles_per_Gallon','Origin'])
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *
-     *  console.log(carsDM.naturalJoin(originDM));
+     *  // Creates two small DataModel instance from the original DataModel instance, which will be joined.
+     *  let makerDM = dm.groupBy(['Origin', 'Maker']).project(['Origin', 'Maker']);
+     *  let nameDM = dm.project(['Name','Miles_per_Gallon'])
+     *
+     *  let outputDM = makerDM.naturalJoin(nameDM);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @text
      * This is chained version of `naturalJoin` operator. `naturalJoin` can also be used as
-     * {@link link_to_join_op | functional operator}.
+     * {@link /muze/api/datamodel/functional-operator | functional operator}.
      *
      * @public
      *
@@ -163,15 +191,33 @@ class Relation {
     }
 
     /**
-     * {@link link_to_union | Union} operation can be termed as vertical stacking of all rows from both the DataModel
-     * instances, provided that both of the {@link DataModel} instances should have same column names.
+     * Union operation can be termed as vertical stacking of all rows from both the DataModel instances, provided that
+     * both of the {@link DataModel} instances should have same column names.
      *
      * @example
-     * console.log(EuropeanMakerDM.union(USAMakerDM));
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
+     *
+     *  // Creates two small DataModel instance from the original DataModel instance, one only for european cars,
+     *  // another for cars from USA.
+     *  usaMakerDM = dm.select(fields => fields.Origin.value === 'USA');
+     *  euroMakerDM = dm.select(fields => fields.Origin.value === 'Europe');
+     *
+     *  outputDM = usaMakerDM.union(euroMakerDM);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @text
-     * This is chained version of `naturalJoin` operator. `naturalJoin` can also be used as
-     * {@link link_to_join_op | functional operator}.
+     * This is chained version of `union` operator. `union` can also be used as
+     * {@link /muze/api/datamodel/functional-operator | functional operator}.
      *
      * @public
      *
@@ -185,15 +231,31 @@ class Relation {
     }
 
     /**
-     * {@link link_to_difference | Difference } operation only include rows which are present in the datamodel on which
-     * it was called but not on the one passed as argument.
+     * Difference operation only include rows which are present in the datamodel on which it was called but not on the
+     * one passed as argument.
      *
      * @example
-     * console.log(highPowerDM.difference(highExpensiveDM));
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *      const data = params[0];
+     *      const schema = params[1];
+     *      const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
+     *
+     *  // Creates a DataModel instance only including USA
+     *  usaMakerDM = dm.select(fields => fields.Origin.value === 'USA');
+     *
+     *  outputDM = dm.difference(usaMakerDM);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @text
-     * This is chained version of `naturalJoin` operator. `naturalJoin` can also be used as
-     * {@link link_to_join_op | functional operator}.
+     * This is chained version of `difference` operator. `difference` can also be used as
+     * {@link /muze/api/datamodel/functional-operator | functional operator}.
      *
      * @public
      *
@@ -206,40 +268,68 @@ class Relation {
     }
 
     /**
-     * {@link link_to_selection | Selection} is a row filtering operation. It expects an predicate and an optional mode
-     * which control which all rows should be included in the resultant DataModel instance.
+     * Selection is a row filtering operation. It expects an predicate and an optional mode which control which all rows
+     * should be included in the resultant DataModel instance.
      *
-     * {@link SelectionPredicate} is a function which returns a boolean value. For selection opearation the selection
-     * function is called for each row of DataModel instance with the current row passed as argument.
+     * {@link SelectionPredicate} is a function which returns a boolean value for each tuple present in the DataModel.
+     * For selection opearation the predicate function is called for each row of DataModel instance with the current row
+     * passed as argument.
      *
-     * After executing {@link SelectionPredicate} the rows are labeled as either an entry of selection set or an entry
+     * After executing {@link SelectionPredicate} the rows are labeled as either an member of selection set or an member
      * of rejection set.
      *
      * {@link FilteringMode} operates on the selection and rejection set to determine which one would reflect in the
      * resulatant datamodel.
      *
-     * @warning
+     * @warn
+     * Note
      * Selection and rejection set is only a logical idea for concept explanation purpose.
      *
+     * Selection with default mode `FilterningMode.NORMAL`
      * @example
-     *  // with selection mode NORMAL:
-     *  const normDt = dt.select(fields => fields.Origin.value === "USA")
-     *  console.log(normDt));
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *  const data = params[0];
+     *  const schema = params[1];
+     *  const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *
-     * // with selection mode INVERSE:
-     * const inverDt = dt.select(fields => fields.Origin.value === "USA", { mode: DataModel.FilteringMode.INVERSE })
-     * console.log(inverDt);
-     *
-     * // with selection mode ALL:
-     * const dtArr = dt.select(fields => fields.Origin.value === "USA", { mode: DataModel.FilteringMode.ALL })
-     * // print the selected parts
-     * console.log(dtArr[0]);
-     * // print the inverted parts
-     * console.log(dtArr[1]);
+     *  let outputDM= dt.select(fields => fields.Origin.value === 'USA')
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @text
+     * Selection with mode `FilterningMode.INVERSE`
+     *
+     * @example
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *  const data = params[0];
+     *  const schema = params[1];
+     *  const DataModel = muze.DataModel;
+     *  const dm = new DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted
+     *  // from muze namespace and assigned to the variable DataModel
+     *
+     * const outputDM= dt.select(fields => fields.Origin.value === "USA", { mode: DataModel.FilteringMode.INVERSE })
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
+     *
+     * @text
+     * with `FilteringMode.ALL` both selection and rejection set is returned.
+     * ```
+     * const [selDM, rejDM] = dt.select(fields => fields.Origin.value === "USA", { mode: DataModel.FilteringMode.ALL })
+     *```
      * This is chained version of `select` operator. `select` can also be used as
-     * {@link link_to_join_op | functional operator}.
+     * {@link /muze/api/datamodel/functional-operator | functional operator}.
      *
      * @public
      *
@@ -303,7 +393,7 @@ class Relation {
      * const dt = new DataModel(schema, data);
      * console.log(dt.isEmpty());
      *
-     * @public
+     * @private
      *
      * @return {Boolean} True if the datamodel has no data, otherwise false.
      */
@@ -346,8 +436,8 @@ class Relation {
     }
 
     /**
-     * {@link Projection} is filter column (field) operation. It expects list of fields' name and either include those
-     * or exclude those based on {@link FilteringMode} on the resultant variable.
+     * Projection is column (field) filtering operation. It expects list of fields' name and either include those or
+     * exclude those based on {@link FilteringMode} on the resultant DataModel instance.
      *
      * Projection expects array of fields name based on which it creates the selection and rejection set. All the field
      * whose name is present in array goes in selection set and rest of the fields goes in rejection set.
@@ -356,29 +446,53 @@ class Relation {
      * resulatant datamodel.
      *
      * @warning
+     * Note
      * Selection and rejection set is only a logical idea for concept explanation purpose.
      *
+     * Projection with default mode `FilterningMode.NORMAL`
      * @example
-     *  const dm = new DataModel(schema, data);
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *  const data = params[0];
+     *  const schema = params[1];
+     *  const dm = new muze.DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *
-     *  // with projection mode NORMAL:
-     *  const normDt = dt.project(["Name", "HorsePower"]);
-     *  console.log(normDt.getData());
-     *
-     *  // with projection mode INVERSE:
-     *  const inverDt = dt.project(["Name", "HorsePower"], { mode: DataModel.FilteringMode.INVERSE })
-     *  console.log(inverDt.getData());
-     *
-     *  // with selection mode ALL:
-     *  const dtArr = dt.project(["Name", "HorsePower"], { mode: DataModel.FilteringMode.ALL })
-     *  // print the normal parts
-     *  console.log(dtArr[0].getData());
-     *  // print the inverted parts
-     *  console.log(dtArr[1].getData());
+     *  let outputDM= dt.project(["Name", "HorsePower"]);
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
      *
      * @text
+     * Projection with mode `FilterningMode.INVERSE`
+     * @example
+     *  //@preamble_start
+     *  Promise.all([loadData('/static/cars.json'), loadData('/static/cars-schema.json')]).then(function (params) {
+     *  const data = params[0];
+     *  const schema = params[1];
+     *  const DataModel = muze.DataModel;
+     *  const dm = new DataModel(data, schema);
+     *  //@preamble_end
+     *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
+     *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted
+     *  // from muze namespace and assigned to the variable DataModel
+     *
+     *  const outputDM= dt.project(["Name", "HorsePower"], { mode: DataModel.FilteringMode.INVERSE });
+     *  //@preamble_start
+     *  printDM(outputDM);
+     *  });
+     *  //@preamble_end
+     *
+     * @text
+     * With `FilteringMode.ALL` both selection and rejection set is returned.
+     * ```
+     * const [selDM, rejDM] = dt.project(["Name", "HorsePower"], { mode: DataModel.FilteringMode.ALL})
+     *```
      * This is chained version of `select` operator. `select` can also be used as
-     * {@link link_to_join_op | functional operator}.
+     * {@link /muze/api/datamodel/functional-operator | functional operator}.
      *
      * @public
      *
