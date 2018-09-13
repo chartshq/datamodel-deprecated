@@ -1,0 +1,13 @@
+---
+  title: "Value"
+  description: "Documented Methods"
+  sections: 
+    - 
+      type: "markdown-section"
+      content: "Value\n\nThe wrapper class on top of the\n[primitive](httpsdevelopermozillaorgenUSdocsWebJavaScriptData_structuresData_types) value of a\nfield."
+    - 
+      type: "markdown-section"
+      content: "value\n\nReturns the underlaying wrapped value."
+    - 
+      type: "markdown-section"
+      content: "<a name=*></a><p class=\"sub-header\">Returns:</p>\n\n <span style=\"font-family: 'Source Code Pro';margin-left: 2%;\">*:</span>Returns the current value."
