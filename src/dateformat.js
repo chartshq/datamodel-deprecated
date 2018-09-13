@@ -1,17 +1,26 @@
 /**
- * `format` in schema provides a rich set of token using which almost any dateformat can be parsed in DataModel.
+ * `format` property in {@link /muze/docs/api-schema | schema} facilitates defining any date-time format by using a rich
+ * set of tokens using which almost any dateformat can be parsed in {@link /muze/docs/api-datamodel | DataModel}.
  *
- * A variable of type temporal can be specified in schema as
+ * A variable of type date-time can be specified in schema as
  * ```
  *  { name: 'name_of_variable', 'type': 'dimension', subtype: 'temporal' };
  * ```
- * DataModel recognizes two date format without specifying the `format` property in schema
+ * Representation of date and time varies based on geo location and personal preference.
+ * {@link /muze/docs/api-datamodel | DataModel} is able to handle all kind of DateFormat possible. By default
+ * {@link /muze/docs/api-datamodel | DataModel} recognizes two date format automatically without specifying the
+ * `format` property in {@link /muze/docs/api-schema | schema}.
  * - Date in miliseconds from epoch date i.e. the result of `new Date(2012, 10, 20).getDate()`
  * - JavaScript {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date | Date}
  *      object.
  *
- * For any other date format, the `format` needs to be specified. Following are the tokens available to specify the
- * format.
+ * For any other date format, the `format` needs to be specified in {@link /muze/docs/api-schema | schema}.
+ * ```
+ *  [
+ *      { type: 'dimension', subtype: 'temporal', format: '%Y' }
+ *  ]
+ * ```
+ * Following are the tokens available to specify formats.
  * <table>
  *      <tr>
  *          <th>Token</th>
@@ -95,8 +104,8 @@
  *      </tr>
  * </table>
  *
- * In order to make DataModel recognize `1990-Sep/25` the format specification will be `%Y-%b/%e`. Here `%` is a token
- * identifier.
+ * In order to make {@link /muze/docs/api-datamodel | DataModel} recognize `1990-Sep/25` the format specification will
+ * be `%Y-%b/%e`. Here `%` is a token identifier.
  *
  * @public
  * @namespace DataModel

@@ -4,8 +4,9 @@ import { rowDiffsetIterator } from './row-diffset-iterator';
 import { isArrEqual } from '../utils/helper';
 
 /**
- * Difference operation only include rows which are present in the datamodel on which it was called but not on the
- * one passed as argument.
+ * Difference operator is written as `(A - B)` where **A** and **B** are instances of {@link DataModel}. The result of
+ * `difference` is an instance of {@link DataModel} which includes tuples which are present in **A** and not in **B**.
+ * For `difference` to work schema of both {@link DataModel} has to be same.
  *
  * @example
  *  //@preamble_start
@@ -35,13 +36,13 @@ import { isArrEqual } from '../utils/helper';
  *
  * @public
  * @namespace DataModel
- * @segment Operator
+ * @segment Operators
  *
- * @param {DataModel} leftDM Instance of DataModel from which the difference will be calculated. For the notation
- *      (A - B), A is the leftDM
- * @param {DataModel} rightDM Instance of DataModel which will be used to calculate the difference from the leftDM. For
- *      the notation (A - B), B is the rightDM.
- * @return {DataModel} New DataModel instance with the result of the operation
+ * @param {DataModel} leftDM Instance of {@link DataModel} from which the difference will be calculated. For the
+ *      notation `(A - B)`, **A** is the leftDM
+ * @param {DataModel} rightDM Instance of {@link DataModel} which will be used to calculate the difference from the
+ *      leftDM. For the notation `(A - B)`, **B** is the rightDM.
+ * @return {DataModel} New {@link DataModel} instance with the result of the operation.
  */
 export function difference (dm1, dm2) {
     const hashTable = {};
