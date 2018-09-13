@@ -41,7 +41,7 @@ function replaceLink(matched, index, original) {
         matched[1] = matched[1].replace(/[^\w\s]/gi, '').trim();
         return `[${matched[1]}](${matched[0]})`;
     }
-	const matchedString = matched.match(/\s.+\b/, matched)[0].trim();
+    const matchedString = matched.match(/\s.+\b/, matched)[0].trim();
     return `[${matchedString}](${matchedString.split(' ').join('-')})`;
 }
 
@@ -125,6 +125,7 @@ function parseDoclet(doclet, namespace) {
     let returnType = null;
     let sections = [];                              // master array to store all sections
     let textTags = [];
+    let infoBoxes = [];
     let docletTags = doclet.tags;
     let { memberof } = doclet;
     let extendsItem = doclet.extends;
@@ -140,6 +141,7 @@ function parseDoclet(doclet, namespace) {
     // Append @text block
     if (docletTags) {
         textTags = docletTags.filter(textTag => textTag.title === 'text');
+        infoBoxes = docletTags.filter(infoBox => ['info', 'warning', 'alert'].includes(infoBox.title));
     }
     // Only consider snippets with @public access specifier
     if (accessSpecifier === 'public') {
@@ -205,10 +207,56 @@ function parseDoclet(doclet, namespace) {
             // Append code block
             if (examples && examples.length) {
                 examples.map((example) => {
+                    example = example.trim();
+                    // field to store preamble
+                    let preamble = [];
+                    // get the lines
+                    let lines = example.split('\n');
+                    let preambleStart = 0;
+                    let preambleEnd = 0;
+
+                    // get the index of the preamble tags
+                    lines.forEach((line, lIdx) => {
+                        if (line === '//@preamble_start') {
+                            preambleStart = lIdx;
+                        }
+                        if (line === '//@preamble_end') {
+                            preambleEnd = lIdx;
+
+                            // get the preamble content if it exists
+                            if (preambleEnd - preambleStart) {
+                                for (let i = preambleStart + 1; i < preambleEnd; i += 1) {
+                                    preamble.push(`${lines[i]}`);
+                                }
+                            }
+                        }
+                    });
+
+                    preamble.forEach((pre) => {
+                        let index = lines.indexOf(pre);
+                        lines.splice(index, 1);
+                    });
+
+                    /**
+                     * function to filter the preamble tags in lines
+                     * @param  {Array} array lines array
+                     * @param  {string} what string to be removed
+                     * @return {Array} the modified array
+                     */
+                    function without(array, what) {
+                        return array.filter(element => element !== what);
+                    }
+
+                    let linesWithoutStart = without(lines, '//@preamble_start');
+                    let linesWithoutEnd = without(linesWithoutStart, '//@preamble_end');
+
+                    const content = linesWithoutEnd.join('\n');
+
                     sections.push({
                         type: 'code-section',
-                        content: example,
-                        preamble: '',
+                        content,
+                        preamble,
+                        preambleWithContent: example,
                     });
                 });
             }
@@ -222,6 +270,22 @@ function parseDoclet(doclet, namespace) {
                             content: text.replace(/{@link\s(.)*}/gi, replaceLink),
                         });
                     }
+                });
+            }
+
+            if (infoBoxes.length) {
+                infoBoxes.map((infoBox) => {
+                    let clonedInfoBox = infoBox.value.split('\n');
+                    let infoBoxTitle = clonedInfoBox.splice(0, 1)[0];
+                    let infoBoxDescription = clonedInfoBox.join('\n');
+                    sections.push({
+                        type: 'Info',
+                        content: {
+                            subType: infoBox.title,
+                            title: infoBoxTitle,
+                            description: infoBoxDescription
+                        }
+                    });
                 });
             }
 
@@ -336,17 +400,19 @@ exports.handlers = {
                     temp[0] = file.name;
                 }
             });
-            let ymlFileName = temp.join('.');
+            let ymlFileName = `api-${temp.join('.')}`;
             // If file is memberof a namespace, store it inside the appropriate namespace folder
             // if (namespace.memberof) {
             //     destination = `${destination}${namespace.memberof}`;
             // }
-            // write the file
-            fs.writeFile(`${destination}${ymlFileName}`, yml, (err) => {
-                if (err) {
-                    console.log(err);
-                }
-            });
+            if (fileDump.sections.length) {
+                // write the file
+                fs.writeFile(`${destination}${ymlFileName}`, yml, (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
         });
     }
 };
