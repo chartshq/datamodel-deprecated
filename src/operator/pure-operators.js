@@ -16,16 +16,19 @@
  *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
  *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
  *  // muze namespace and assigned to the DataModel variable.
+ *
+ *  const calculateVariable = DataModel.Operators.calculateVariable
  *  const creatorFn = calculateVariable({
  *      name: 'powerToWeight',
  *      type: 'measure' // Schema of variable
- *  }, ['horsepower', 'weight_in_lbs', (hp, weight) => hp / weight ]);
+ *  }, ['Horsepower', 'Weight_in_lbs', (hp, weight) => hp / weight ]);
  *  const outputDM = creatorFn(dm);
  *  //@preamble_start
  *  printDM(outputDM);
  *  });
  *  //@preamble_end
  *
+ * @text
  * Creates a new dimension based on existing variables
  * @example
  *  //@preamble_start
@@ -39,12 +42,13 @@
  *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted from
  *  // muze namespace and assigned to the DataModel variable.
  *
+ *  const calculateVariable = DataModel.Operators.calculateVariable;
  *  const creatorFn = calculateVariable(
  *     {
  *       name: 'Efficiency',
  *       type: 'dimension'
- *     }, ['horsepower', (hp) => {
- *      if (hp < 80) { return 'low'; },
+ *     }, ['Horsepower', (hp) => {
+ *      if (hp < 80) { return 'low'; }
  *      else if (hp < 120) { return 'moderate'; }
  *      else { return 'high' }
  *  }]);
@@ -55,7 +59,6 @@
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {Schema} schema: Schema of newly defined variable
@@ -90,7 +93,7 @@ export const calculateVariable = (...args) => dm => dm.calculateVariable(...args
  *
  *  const sort = DataModel.Operators.sort;
  *  const preparatorFn = sort([
- *      ['Origin', 'DESC']
+ *      ['Origin', 'DESC'],
  *      ['Acceleration'] // Default value is ASC
  *  ]);
  *  const outputDM = preparatorFn(dm);
@@ -122,7 +125,7 @@ export const calculateVariable = (...args) => dm => dm.calculateVariable(...args
  *  const avg = DataModel.Stats.avg;
  *  const sort = DataModel.Operators.sort;
  *  const preparatorFn = sort([
- *      ['Origin', ['Acceleration', (a, b) => avg(...a.Acceleration) - avg(...b.Acceleration)]]
+ *      ['Origin', ['Acceleration', (a, b) => avg(a.Acceleration) - avg(b.Acceleration)]]
  *  ]);
  *  const outputDM = preparatorFn(dm);
  *  //@preamble_start
@@ -134,7 +137,6 @@ export const calculateVariable = (...args) => dm => dm.calculateVariable(...args
  * If `groupBy` is applied post sorting, then sorting order is destroyed.
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {Array.<Array>} sortingDetails - Sorting details based on which the sorting will be performed.

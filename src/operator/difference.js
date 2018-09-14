@@ -4,9 +4,10 @@ import { rowDiffsetIterator } from './row-diffset-iterator';
 import { isArrEqual } from '../utils/helper';
 
 /**
- * Difference operator is written as `(A - B)` where **A** and **B** are instances of {@link DataModel}. The result of
- * `difference` is an instance of {@link DataModel} which includes tuples which are present in **A** and not in **B**.
- * For `difference` to work schema of both {@link DataModel} has to be same.
+ * Difference operator is written as `(A - B)` where **A** and **B** are instances of
+ * {@link /muze/docs/api-datamodel | DataModel}. The result of `difference` is an instance of
+ * {@link /muze/docs/api-datamodel | DataModel} which includes tuples which are present in **A** and not in **B**.
+ * For `difference` to work schema of both {@link /muze/docs/api-datamodel | DataModel} has to be same.
  *
  * @example
  *  //@preamble_start
@@ -35,7 +36,6 @@ import { isArrEqual } from '../utils/helper';
  * {@link /muze/api/datamodel/functional-operator | chained operator}.
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {DataModel} leftDM Instance of {@link DataModel} from which the difference will be calculated. For the

@@ -1,0 +1,7 @@
+---
+  title: "DataModel"
+  description: "Documented Methods"
+  sections: 
+    - 
+      type: "markdown-section"
+      content: "\n\nRelation provides the definitions of basic operators of relational algebra like *selection*, *projection*, *union*,\n*difference* etc.\n\nIt is extended by [DataModel](DataModel) to inherit the functionalities of relational algebra concept. Its not recommended\nto instantiate this class and use it."

@@ -42,6 +42,5 @@
  * ```
  *
  * @public
- * @namespace DataModel
- * @segment Schema
+ * @module Schema
  */

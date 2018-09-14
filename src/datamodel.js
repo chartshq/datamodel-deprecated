@@ -23,14 +23,14 @@ import createFields from './field-creator';
  * DataModel is an in-browser representation of tabular data. It supports
  * {@link https://en.wikipedia.org/wiki/Relational_algebra | relational algebra} operators as well as generic data
  * processing opearators.
- * DataModel extends {@link Relation} class which defines all the relational algebra opreators. DataModel gives
- * definition of generic data processing operators which are not relational algebra complient but needed for ease of
- * use.
+ * DataModel extends {@link /muze/docs/api-Relation | Relation} class which defines all the relational algebra
+ * opreators. DataModel gives definition of generic data processing operators which are not relational algebra complient
+ * but needed for ease of use.
  *
  * @public
  * @class
  * @extends Relation
- * @segment DataModel
+ * @module DataModel
  */
 class DataModel extends Relation {
     /**
@@ -40,13 +40,16 @@ class DataModel extends Relation {
      * - 2D Array
      *
      * By default DataModel finds suitable adapter to serialize the data. DataModel also expects a
-     * {@link Schema | schema} for identifying the variables present in data.
+     * {@link /muze/docs/api-schema | schema} for identifying the variables present in data.
      *
      * @constructor
      * @example
      *  const DataModel = muze.DataModel; // Retrieves reference to DataModel from muze namespace
      *  const data = [
-     *      { Name:'chevrolet chevelle malibu', Miles_per_Gallo:18, Cylinders:8, Horsepower:130, Year:'1970' },
+     *      { Name:'chevrolet chevelle malibu', Miles_per_Gallon:18, Cylinders:8, Horsepower:130, Year:'1970' },
+     *      { Name:'ford fiesta', Miles_per_Gallon:36.1, Cylinders:4, Horsepower:66, Year:'1978' },
+     *      { Name:'bmw 320i', Miles_per_Gallon:21.5, Cylinders:4, Horsepower:110, Year:'1977' },
+     *      { Name:'chevrolet chevelle malibu', Miles_per_Gallon:18, Cylinders:8, Horsepower:130, Year:'1970' },
      *      { Name:'ford fiesta', Miles_per_Gallon:36.1, Cylinders:4, Horsepower:66, Year:'1978' },
      *      { Name:'bmw 320i', Miles_per_Gallon:21.5, Cylinders:4, Horsepower:110, Year:'1977' }
      *  ];
@@ -55,8 +58,7 @@ class DataModel extends Relation {
      *      { name: 'Miles_per_Gallon', type: 'measure', unit : 'gallon', numberformat: val => `${val}G`},
      *      { name: 'Cylinders', type: 'dimension' },
      *      { name: 'Horsepower', type: 'measure' },
-     *      { name: 'Year', type: 'dimension', subtype: 'datetime', format: '%Y' },
-     *      { name: 'Origin', type: 'dimension' }
+     *      { name: 'Year', type: 'dimension', subtype: 'datetime', format: '%Y' }
      * ];
      * const dm = new DataModel(data, schema, { name: 'Cars' });
      * printDM(dm); // internal function to print datamodel, available only in this interface
@@ -88,7 +90,7 @@ class DataModel extends Relation {
      * @public
      * @static
      *
-     * @return {ReducerStore} Singleton instance of {@link ReducerStore}.
+     * @return {ReducerStore} Singleton instance of {@link /muze/docs/api-reducerstore | ReducerStore}.
      */
     static get Reducers () {
         return reducerStore;
@@ -106,16 +108,16 @@ class DataModel extends Relation {
      *  //@preamble_end
      *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
      *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
-     *  const data = dm.getData({
+     *  const serializedData = dm.getData({
      *      order: 'column',
      *      formatter: {
-     *          origin: (val) => val === 'European Union' ? 'EU' : val;
+     *          origin: (val) => val === 'European Union' ? 'EU' : val
      *      }
      *  });
+     *  console.log(serializedData);
      *  //@preamble_start
      *  });
      *  //@preamble_end
-     *  console.log(data);
      *
      * @public
      *
@@ -125,15 +127,17 @@ class DataModel extends Relation {
      * @param {Function} [options.formatter=null] Formats the output data. This expects an object, where the keys are
      *      the name of the variable needs to be formatted. The formatter function is called for each row passing the
      *      value of the cell for a particular row as arguments. The formatter is a function in the form of
-     *      `function (value, rowId, schema) => { ... }`
+     *      ```
+     *      function (value, rowId, schema) => { ... }
+     *      ```
      *      Know more about {@link Fomatter}.
      *
      * @return {Array} Returns a multidimensional array of the data with schema. The return format looks like
      *      ```
-     *          {
-     *              data,
-     *              schema
-     *          }
+     *      {
+     *           data,
+     *           schema
+     *      }
      *      ```
      */
     getData (options) {
@@ -213,8 +217,8 @@ class DataModel extends Relation {
      * it projects the datamodel and perform aggregations to reduce the duplicate tuples. Refer this
      * {@link /muze/docs/datamodel-operators#groupby | document} to know the intuition behind groupBy.
      *
-     * DataModel by default provides definition of few {@link reducer | Reducers} for reducing a measure when
-     * aggregation is required for `groupBy`.
+     * DataModel by default provides definition of few {@link /muze/docs/api-reducer | Reducers} for reducing a measure
+     * when aggregation is required for `groupBy`.
      * {@link ReducerStore | User defined reducers} can also be registered.
      *
      * This is the chained implementation of `groupBy`.
@@ -287,7 +291,7 @@ class DataModel extends Relation {
      *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
      *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *  let outputDM = dm.sort([
-     *      ['Origin', 'DESC']
+     *      ['Origin', 'DESC'],
      *      ['Acceleration'] // Default value is ASC
      *  ]);
      *  //@preamble_start
@@ -317,7 +321,7 @@ class DataModel extends Relation {
      *  // from muze namespace and assigned to DataModel variable.
      *  const avg = DataModel.Stats.avg;
      *  const outputDM = dm.sort([
-     *      ['Origin', ['Acceleration', (a, b) => avg(...a.Acceleration) - avg(...b.Acceleration)]]
+     *      ['Origin', ['Acceleration', (a, b) => avg(a.Acceleration) - avg(b.Acceleration)]]
      *  ]);
      *  //@preamble_start
      *  printDM(outputDM);
@@ -378,12 +382,13 @@ class DataModel extends Relation {
      *  const outputDM = dm.calculateVariable({
      *      name: 'powerToWeight',
      *      type: 'measure' // Schema of variable
-     *  }, ['horsepower', 'weight_in_lbs', (hp, weight) => hp / weight ]);
+     *  }, ['Horsepower', 'Weight_in_lbs', (hp, weight) => hp / weight ]);
      *  //@preamble_start
      *  printDM(outputDM);
      *  });
      *  //@preamble_end
      *
+     * @text
      * Creates a new dimension based on existing variables
      * @example
      *  //@preamble_start
@@ -398,8 +403,8 @@ class DataModel extends Relation {
      *     {
      *       name: 'Efficiency',
      *       type: 'dimension'
-     *     }, ['horsepower', (hp) => {
-     *      if (hp < 80) { return 'low'; },
+     *     }, ['Horsepower', (hp) => {
+     *      if (hp < 80) { return 'low'; }
      *      else if (hp < 120) { return 'moderate'; }
      *      else { return 'high' }
      *  }]);
@@ -410,8 +415,9 @@ class DataModel extends Relation {
      *
      * @public
      *
-     * @param {Schema} schema: Schema of newly defined variable
-     * @param {VariableResolver} resolver: Resolver format to resolve the current variable
+     * @param {Schema} schema Schema of newly defined variable
+     * @param {VariableResolver} resolver {@link /muze/docs/api-variableresolver | Resolver} format to resolve the
+     *      current variable
      *
      * @return {DataModel} Instance of DataModel with the new field
      */

@@ -24,7 +24,7 @@ import { naturalJoinFilter } from './natural-join-filter-function';
  *  const makerDM = dm.groupBy(['Origin', 'Maker']).project(['Origin', 'Maker']);
  *  const nameDM = dm.project(['Name','Miles_per_Gallon'])
  *
- *  const naturalJoin = DataModel.Operatros.naturalJoin;
+ *  const naturalJoin = DataModel.Operators.naturalJoin;
  *  const outputDM = naturalJoin(makerDM, nameDM);
  *  //@preamble_start
  *  printDM(outputDM);
@@ -33,7 +33,7 @@ import { naturalJoinFilter } from './natural-join-filter-function';
  *
  * @public
  * @namespace DataModel
- * @segment Operator
+ * @segment Operators
  *
  * @param {DataModel} leftDM Instance of DataModel
  * @param {DataModel} rightDM Instance of DataModel

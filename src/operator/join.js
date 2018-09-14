@@ -1,7 +1,8 @@
 /**
- * Performs {@link https://en.wikipedia.org/wiki/Cartesian_product | cross-product} between two {@link DataModel}
- * instances with an optional predicate which determines which tuples should be included and returns a new
- * {@link DataModel} instance containing the results. This operation is also called theta join.
+ * Performs {@link https://en.wikipedia.org/wiki/Cartesian_product | cross-product} between two
+ * {@link /muze/docs/api-datamodel | DataModel} instances with an optional predicate which determines which tuples
+ * should be included and returns a new {@link /muze/docs/api-datamodel | DataModel} instance containing the results.
+ * This operation is also called theta join.
  *
  * Cross product takes two set and create one set where each value of one set is paired with each value of another
  * set.
@@ -34,7 +35,6 @@
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {DataModel} leftDM Instance of DataModel

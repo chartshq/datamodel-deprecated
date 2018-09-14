@@ -8,8 +8,8 @@ import { DM_DERIVATIVES } from './constants';
  * Relation provides the definitions of basic operators of relational algebra like *selection*, *projection*, *union*,
  * *difference* etc.
  *
- * It is extended by {@link DataModel} to inherit the functionalities of relational algebra concept. Its not recommended
- * to instantiate this class and use it.
+ * It is extended by {@link /muze/docs/api-datamodel | DataModel} to inherit the functionalities of relational algebra
+ * concept. Its not recommended to instantiate this class and use it.
  *
  * @class
  * @public
@@ -55,7 +55,7 @@ class Relation {
     }
 
     /**
-     * Retrieves the {@link Schema | schema} details for every {@link Field | field} in an array format.
+     * Retrieves the {@link /muze/docs/api-schema | schema} details for every field in an array format.
      *
      * @public
      *
@@ -79,8 +79,8 @@ class Relation {
     }
 
     /**
-     * Returns the name of the {@link DataModel} instance. If no name was specified during {@link DataModel}
-     * initialization, then it returns a auto-generated name.
+     * Returns the name of the {@link /muze/docs/api-datamodel | DataModel} instance. If no name was specified during
+     * {@link DataModel} initialization, then it returns a auto-generated name.
      *
      * @public
      *
@@ -105,9 +105,10 @@ class Relation {
     }
 
     /**
-     * Performs {@link https://en.wikipedia.org/wiki/Cartesian_product | cross-product} between two {@link DataModel}
-     * instances with an optional predicate which determines which tuples should be included and returns a new
-     * {@link DataModel} instance containing the results. This operation is also called theta join.
+     * Performs {@link https://en.wikipedia.org/wiki/Cartesian_product | cross-product} between two
+     * {@link /muze/docs/api-datamodel | DataModel} instances with an optional predicate which determines which tuples
+     * should be included and returns a new {@link /muze/docs/api-datamodel | DataModel} instance containing the
+     * results. This operation is also called theta join.
      *
      * Cross product takes two set and create one set where each value of one set is paired with each value of another
      * set.
@@ -192,7 +193,7 @@ class Relation {
 
     /**
      * Union operation can be termed as vertical stacking of all rows from both the DataModel instances, provided that
-     * both of the {@link DataModel} instances should have same column names.
+     * both of the {@link /muze/docs/api-datamodel | DataModel} instances should have same column names.
      *
      * @example
      *  //@preamble_start
@@ -271,15 +272,15 @@ class Relation {
      * Selection is a row filtering operation. It expects an predicate and an optional mode which control which all rows
      * should be included in the resultant DataModel instance.
      *
-     * {@link SelectionPredicate} is a function which returns a boolean value for each tuple present in the DataModel.
-     * For selection opearation the predicate function is called for each row of DataModel instance with the current row
-     * passed as argument.
+     * {@link /muze/docs/api-selectionpredicate | SelectionPredicate} is a function which returns a boolean value for
+     * each tuple present in the DataModel. For selection opearation the predicate function is called for each row of
+     * DataModel instance with the current row passed as argument.
      *
-     * After executing {@link SelectionPredicate} the rows are labeled as either an member of selection set or an member
-     * of rejection set.
+     * After executing {@link /muze/docs/api-selectionpredicate | SelectionPredicate} the rows are labeled as either an
+     * member of selection set or an member of rejection set.
      *
-     * {@link FilteringMode} operates on the selection and rejection set to determine which one would reflect in the
-     * resulatant datamodel.
+     * {@link /muze/docs/api-enums#filteringmode | FilteringMode} operates on the selection and rejection set to
+     * determine which one would reflect in the resulatant datamodel.
      *
      * @warn
      * Note
@@ -296,7 +297,7 @@ class Relation {
      *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
      *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *
-     *  let outputDM= dt.select(fields => fields.Origin.value === 'USA')
+     *  let outputDM= dm.select(fields => fields.Origin.value === 'USA')
      *  //@preamble_start
      *  printDM(outputDM);
      *  });
@@ -317,7 +318,7 @@ class Relation {
      *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted
      *  // from muze namespace and assigned to the variable DataModel
      *
-     * const outputDM= dt.select(fields => fields.Origin.value === "USA", { mode: DataModel.FilteringMode.INVERSE })
+     * const outputDM= dm.select(fields => fields.Origin.value === "USA", { mode: DataModel.FilteringMode.INVERSE })
      *  //@preamble_start
      *  printDM(outputDM);
      *  });
@@ -326,7 +327,7 @@ class Relation {
      * @text
      * with `FilteringMode.ALL` both selection and rejection set is returned.
      * ```
-     * const [selDM, rejDM] = dt.select(fields => fields.Origin.value === "USA", { mode: DataModel.FilteringMode.ALL })
+     * const [selDM, rejDM] = dm.select(fields => fields.Origin.value === "USA", { mode: DataModel.FilteringMode.ALL })
      *```
      * This is chained version of `select` operator. `select` can also be used as
      * {@link /muze/api/datamodel/functional-operator | functional operator}.
@@ -390,8 +391,8 @@ class Relation {
      * ];
      * const data = [];
      *
-     * const dt = new DataModel(schema, data);
-     * console.log(dt.isEmpty());
+     * const dm = new DataModel(schema, data);
+     * console.log(dm.isEmpty());
      *
      * @private
      *
@@ -460,7 +461,7 @@ class Relation {
      *  // DataModel instance is created from https://www.charts.com/static/cars.json data,
      *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm.
      *
-     *  let outputDM= dt.project(["Name", "HorsePower"]);
+     *  let outputDM= dm.project(["Name", "HorsePower"]);
      *  //@preamble_start
      *  printDM(outputDM);
      *  });
@@ -480,7 +481,7 @@ class Relation {
      *  // https://www.charts.com/static/cars-schema.json schema and assigned to variable dm. DataModel is extracted
      *  // from muze namespace and assigned to the variable DataModel
      *
-     *  const outputDM= dt.project(["Name", "HorsePower"], { mode: DataModel.FilteringMode.INVERSE });
+     *  const outputDM= dm.project(["Name", "HorsePower"], { mode: DataModel.FilteringMode.INVERSE });
      *  //@preamble_start
      *  printDM(outputDM);
      *  });
@@ -489,7 +490,7 @@ class Relation {
      * @text
      * With `FilteringMode.ALL` both selection and rejection set is returned.
      * ```
-     * const [selDM, rejDM] = dt.project(["Name", "HorsePower"], { mode: DataModel.FilteringMode.ALL})
+     * const [selDM, rejDM] = dm.project(["Name", "HorsePower"], { mode: DataModel.FilteringMode.ALL})
      *```
      * This is chained version of `select` operator. `select` can also be used as
      * {@link /muze/api/datamodel/functional-operator | functional operator}.
@@ -586,10 +587,10 @@ class Relation {
      *    { Name: "amc rebel sst", Horsepower: 150, Origin: "USA"},
      * ]
      *
-     * const dt = new DataModel(schema, data);
+     * const dm = new DataModel(schema, data);
      *
-     * const dt2 = dt.select(fields => fields.Origin.value === "USA")
-     * dt.removeChild(dt2);
+     * const dm2 = dm.select(fields => fields.Origin.value === "USA")
+     * dm.removeChild(dm2);
      *
      * @private
      *

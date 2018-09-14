@@ -4,8 +4,9 @@ import { union } from './union';
 
 /**
  * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Left outer join} between two
- * {@link DataModel} instances is a kind of join that ensures that all the tuples from the left {@link DataModel}
- * are present in the resulatant {@link DataModel}. This operator takes a predicate which gets called for every
+ * {@link /muze/docs/api-datamodel | DataModel} instances is a kind of join that ensures that all the tuples from the
+ * left {@link /muze/docs/api-datamodel | DataModel} are present in the resulatant
+ * {@link /muze/docs/api-datamodel | DataModel}. This operator takes a predicate which gets called for every
  * combination of tuples (created by cartesian product). Based on the value of predicate the equality is established
  * between two DataModel.
  *
@@ -35,7 +36,6 @@ import { union } from './union';
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {DataModel} leftDm Instance of DataModel
@@ -50,8 +50,9 @@ export function leftOuterJoin (leftDm, rightDm, filterFn) {
 
 /**
  * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Right outer join} between two
- * {@link DataModel} instances is a kind of join that ensures that all the tuples from the right {@link DataModel}
- * are present in the resulatant {@link DataModel}. This operator takes a predicate which gets called for every
+ * {@link /muze/docs/api-datamodel | DataModel} instances is a kind of join that ensures that all the tuples from the
+ * right {@link /muze/docs/api-datamodel | DataModel} are present in the resulatant
+ * {@link /muze/docs/api-datamodel | DataModel}. This operator takes a predicate which gets called for every
  * combination of tuples (created by cartesian product). Based on the value of predicate the equality is established
  * between two DataModel.
  *
@@ -81,7 +82,6 @@ export function leftOuterJoin (leftDm, rightDm, filterFn) {
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {DataModel} leftDm Instance of DataModel
@@ -97,8 +97,9 @@ export function rightOuterJoin (dataModel1, dataModel2, filterFn) {
 
 /**
  * {@link https://www.geeksforgeeks.org/extended-operators-in-relational-algebra/ | Full outer join} between two
- * {@link DataModel} instances is a kind of join that ensures that all the tuples from the left {@link DataModel} and
- * right {@link DataModel} are present in the resulatant {@link DataModel}. This operator takes a predicate which gets
+ * {@link /muze/docs/api-datamodel | DataModel} instances is a kind of join that ensures that all the tuples from the
+ * left {@link /muze/docs/api-datamodel | DataModel} and right {@link /muze/docs/api-datamodel | DataModel} are present
+ * in the resulatant {@link /muze/docs/api-datamodel | DataModel}. This operator takes a predicate which gets
  * called for every combination of tuples (created by cartesian product). Based on the value of predicate the equality
  * is established between two DataModel.
  *
@@ -128,7 +129,6 @@ export function rightOuterJoin (dataModel1, dataModel2, filterFn) {
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {DataModel} leftDm Instance of DataModel

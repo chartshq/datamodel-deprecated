@@ -17,6 +17,9 @@
  *
  *  console.log(data);
  *
+ * @public
+ * @module Formatter
+ *
  * @param {any} value value of the variable needs to be formatted for a particular row
  * @param {Number} rowId row id of the row being iterated
  * @param {Schema} schema schema of the variable

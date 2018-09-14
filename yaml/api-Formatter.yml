@@ -1,0 +1,18 @@
+---
+  title: "Formatter"
+  description: "Documented Methods"
+  sections: 
+    - 
+      type: "markdown-section"
+      content: "\n\nFormatter function is used to format data when DataModel is deserialized. This function is called for every row of\nthe data model with the value, rowId and schema. This function is expected to return a single value for each row of a\nvariable. This formatter function is only used for output purpose."
+    - 
+      type: "code-section"
+      content: "const dateFormatter = (dateInMS) => {\n     const d = new Date(dateInMS);\n     return [d.getFullYear(), d.getMonth(), d.getDay()].join('-')\n };\n\n const data = dm.getData({\n     formatter: {\n         shippingDate: dateFormatter\n     }\n });\n\n console.log(data);"
+      preamble: []
+      preambleWithContent: "const dateFormatter = (dateInMS) => {\n     const d = new Date(dateInMS);\n     return [d.getFullYear(), d.getMonth(), d.getDay()].join('-')\n };\n\n const data = dm.getData({\n     formatter: {\n         shippingDate: dateFormatter\n     }\n });\n\n console.log(data);"
+    - 
+      type: "markdown-section"
+      content: "<p class=\"sub-header\">Parameters:</p>\n<table><thead><tr><td>Name</td><td>Type</td><td>Description</td></tr></thead>\n<tr>\n                <td class=\"param-name\">rowId</td>\n                <td><p>Number</p> </td>\n                <td><p>row id of the row being iterated</p> </td>\n            </tr>\n<tr>\n                <td class=\"param-name\">schema</td>\n                <td><p>Schema</p> </td>\n                <td><p>schema of the variable</p> </td>\n            </tr></table>"
+    - 
+      type: "markdown-section"
+      content: "<a name=any></a><p class=\"sub-header\">Returns:</p>\n\n <span style=\"font-family: 'Source Code Pro';margin-left: 2%;\">[any](any):&nbsp;</span>formatted values"

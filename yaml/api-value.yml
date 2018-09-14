@@ -4,10 +4,10 @@
   sections: 
     - 
       type: "markdown-section"
-      content: "Value\n\nThe wrapper class on top of the\n[primitive](httpsdevelopermozillaorgenUSdocsWebJavaScriptData_structuresData_types) value of a\nfield."
+      content: "\n\nThe wrapper class on top of the\n[primitive](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Data_types) value of a\nfield."
     - 
       type: "markdown-section"
-      content: "value\n\nReturns the underlaying wrapped value."
+      content: "## <a name=value></a> <span style=\"font-family: Source Code Pro; font-weight: 500;color: #eb5757;\">value</span>\n\nReturns the underlaying wrapped value."
     - 
       type: "markdown-section"
-      content: "<a name=*></a><p class=\"sub-header\">Returns:</p>\n\n <span style=\"font-family: 'Source Code Pro';margin-left: 2%;\">*:</span>Returns the current value."
+      content: "<a name=*></a><p class=\"sub-header\">Returns:</p>\n\n <span style=\"font-family: 'Source Code Pro';margin-left: 2%;\">[*](*):&nbsp;</span>Returns the current value."

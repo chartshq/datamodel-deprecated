@@ -1,7 +1,7 @@
 ---
-  title: "Variable-resolver"
+  title: "Variableresolver"
   description: "Documented Methods"
   sections: 
     - 
       type: "markdown-section"
-      content: "VariableResolver\n\nA format of specifying resolve criteria of a new variable from existing variables. Newly created variables could be a\nmeasure or dimension.\nThe format for resolver is intuitive. It needs name of all existing variables, using which the value of new variable\nis calculated, listed adjacently followed by the resolving function in a single array.\n\nThe resolver function gets called for each row of data passing the [Value](Value) of dependent variables as\nparameter\n```\n ['horsepower', 'acceleration', (horsepower, acceleration) => {\n     return acceleration / horsepower;\n }]\n```"
+      content: "\n\nA format of specifying resolve criteria of a new variable from existing variables. Newly created variables could be a\nmeasure or dimension.\nThe format for resolver is intuitive. It needs name of all existing variables, using which the value of new variable\nis calculated, listed adjacently followed by the resolving function in a single array.\n\nThe resolver function gets called for each row of data passing the [Value](Value) of dependent variables as\nparameter\n```\n ['horsepower', 'acceleration', (horsepower, acceleration) => {\n     return acceleration / horsepower;\n }]\n```"

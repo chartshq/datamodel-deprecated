@@ -1,7 +1,7 @@
 
 /**
  * DataModel's opearators are exposed as composable functional operators as well as chainable operators. Chainable
- * operators are called on the instances of {@link Datamodel} class.
+ * operators are called on the instances of {@link /muze/docs/api-datamodel | Datamodel} class.
  *
  * Those same operators can be used as composable operators from `DataModel.Operators` namespace.
  *
@@ -9,23 +9,23 @@
  * returns a function which expects a DataModel instance.
  *
  * @public
- * @module Operators
- * @namespace DataModel
+ * @segment Operators
  */
 
 /**
  * This is functional version of selection operator. Selection is a row filtering operation. It takes
- * {@link SelectionPredicate | predicate} for filtering criteria and returns a function. The returned function is called
- * with the DataModel instance on which the action needs to be performed.
+ * {@link /muze/docs/api-selecitonpredicate | predicate} for filtering criteria and returns a function. The returned
+ * function is called with the DataModel instance on which the action needs to be performed.
  *
- * {@link SelectionPredicate} is a function which returns a boolean value. For selection opearation the selection
- * function is called for each row of DataModel instance with the current row passed as argument.
+ * {@link /muze/docs/api-selecitonpredicate | SelectionPredicate} is a function which returns a boolean value. For
+ * selection opearation the selection function is called for each row of DataModel instance with the current row passed
+ * as argument.
  *
- * After executing {@link SelectionPredicate} the rows are labeled as either an entry of selection set or an entry
- * of rejection set.
+ * After executing {@link /muze/docs/api-selecitonpredicate | SelectionPredicate} the rows are labeled as either an
+ * entry of selection set or an entry of rejection set.
  *
- * {@link FilteringMode} operates on the selection and rejection set to determine which one would reflect in the
- * resulatant datamodel.
+ * {@link /muze/docs/api-Enums#FilteringMode | FilteringMode} operates on the selection and rejection set to determine
+ * which one would reflect in the resulatant datamodel.
  *
  * @warning
  * Note
@@ -56,7 +56,6 @@
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {SelectionPredicate} selectFn - Predicate function which is called for each row with the current row
@@ -74,15 +73,15 @@ export const select = (...args) => dm => dm.select(...args);
 
 /**
  * This is functional version of projection operator. Projection is a column (field) filtering operation. It expects
- * list of fields name and either include those or exclude those based on {@link FilteringMode} on the resultant
- * dataModel. It returns a function which is called with the DataModel instance on which the action needs to be
- * performed.
+ * list of fields name and either include those or exclude those based on
+ * {@link /muze/docs/api-Enums#FilteringMode | FilteringMode} on the resultant dataModel. It returns a function which is
+ * called with the DataModel instance on which the action needs to be performed.
  *
  * Projection expects array of fields name based on which it creates the selection and rejection set. All the field
  * whose name is present in array goes in selection set and rest of the fields goes in rejection set.
  *
- * {@link FilteringMode} operates on the selection and rejection set to determine which one would reflect in the
- * resulatant datamodel.
+ * {@link /muze/docs/api-Enums#FilteringMode | FilteringMode} operates on the selection and rejection set to determine
+ * which one would reflect in the resulatant datamodel.
  *
  * @warning
  * Note
@@ -113,7 +112,6 @@ export const select = (...args) => dm => dm.select(...args);
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {Array.<string | Regexp>} projField - An array of column names in string or regular expression.
@@ -165,7 +163,6 @@ export const project = (...args) => dm => dm.project(...args);
  *
  * @todo Fix interaction of binning and then make it public
  * @private
- * @namespace DataModel
  * @module Operators
  *
  * @param {String} name Name of measure which will be used to create bin
@@ -191,8 +188,8 @@ export const bin = (...args) => dm => dm.bin(...args);
  * reduce the duplicate tuples. Refer {@link /muze/docs/datamodel-operators#groupby | this document} to know the
  * intuition behind groupBy.
  *
- * DataModel by default provides definition of few {@link reducer | Reducers}.
- * {@link ReducerStore | User defined reducers} can also be registered.
+ * DataModel by default provides definition of few {@link /muze/docs/api-reducer | Reducers}.
+ * {@link /muze/docs/api-reducerstore | User defined reducers} can also be registered.
  *
  * @example
  *  //@preamble_start
@@ -208,14 +205,13 @@ export const bin = (...args) => dm => dm.bin(...args);
  *
  *  const groupBy = DataModel.Operators.groupBy;
  *  const groupedFn = groupBy(['Year'], { horsepower: 'max' } );
- *  const outputDM = groupByFn(dm);
+ *  const outputDM = groupedFn(dm);
  *  //@preamble_start
  *  printDM(outputDM);
  *  });
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
  * @segment Operators
  *
  * @param {Array.<string>} fieldsArr Array containing the name of dimensions
@@ -271,8 +267,7 @@ export const groupBy = (...args) => dm => dm.groupBy(...args);
  *  //@preamble_end
  *
  * @public
- * @namespace DataModel
- * @module Operators
+ * @segment Operators
  *
  * @param {Array.<Operators>} operators: An array of operation that will be applied on the
  * datatable.

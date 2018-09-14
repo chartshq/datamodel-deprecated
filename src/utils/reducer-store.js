@@ -3,7 +3,7 @@ import { defReducer, fnList } from '../operator';
 /**
  * A page level storage which stores, registers, unregisters reducers for all the datamodel instances. There is only one
  * reducer store available in a page. All the datamodel instances receive same instance of reducer store. DataModel
- * out of the box provides handful of {@link reducer | reducers} which can be used as reducer function.
+ * out of the box provides handful of {@link /muze/docs/api-reducer | reducers} which can be used as reducer function.
  *
  * @public
  * @namespace DataModel

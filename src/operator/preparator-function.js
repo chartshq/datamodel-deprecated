@@ -11,7 +11,6 @@
  *
  * @public
  * @module PreparatorFunction
- * @namespace DataModel
  *
  * @param {DataModel} target Instance of DataModel on which operator has to be applied
  *

@@ -108,6 +108,5 @@
  * be `%Y-%b/%e`. Here `%` is a token identifier.
  *
  * @public
- * @namespace DataModel
- * @segment DateFormat
+ * @module DateFormat
  */

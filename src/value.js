@@ -6,6 +6,7 @@
  * @todo Need to have support for StringValue, NumberValue, DateTimeValue and GeoValue.
  *
  * @class Value
+ * @module Value
  * @public
  */
 class Value {

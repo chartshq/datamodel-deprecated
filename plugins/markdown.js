@@ -37,7 +37,8 @@ function generateNestedMap(objArray) {
 function replaceLink(matched, index, original) {
     if (matched.includes('|')) {
         matched = matched.split('|');
-        matched[0] = matched[0].replace(/[^\w\s]/gi, '').split(' ')[1].trim();
+        // matched[0] = matched[0].replace(/[^\w\s]/gi, '').split(' ')[1].trim();
+        matched[0] = matched[0].replace(/({@link )/g, '').trim();
         matched[1] = matched[1].replace(/[^\w\s]/gi, '').trim();
         return `[${matched[1]}](${matched[0]})`;
     }
@@ -53,6 +54,16 @@ function replaceLink(matched, index, original) {
 function createTableItem(value, typeofItem) {
     if (typeofItem === 'name') {
         return `<td class="param-name">${value.replace(/{@link\s+.*?}/gi, replaceLink).replace(/\s\s+/g, ' ').replace(/[^\w\s]/gi, '')}</td>`;
+    }
+    let matchedArr = value.match(/(```)([\s\S]*?)(```)/gm);
+    let matched = null;
+    if (matchedArr && matchedArr.length) {
+        matched = matchedArr[0];
+    }
+    let backTickText = null;
+    if (matched) {
+        backTickText = marked(matched);
+        value = value.replace(/(```)([\s\S]*?)(```)/gm, backTickText);
     }
     return `<td>${marked(value.replace(/{@link\s+.*?}/gi, replaceLink).replace(/(null)/gi, '')).replace(/(\r\n|\n|\r)/gm, ' ')}</td>`;
 }
@@ -112,7 +123,7 @@ function createTable (oldkey, map) {
  * @param {Object} doclet JSDOC doclet.
  * @returns {Array} Array that follows the Proptypes of the Editor component.
  */
-function parseDoclet(doclet, namespace) {
+function parseDoclet(doclet, sameLevel = false) {
     let name = doclet.name;                         // name of current jsdoc item
     let classDescription = doclet.classdesc;        // descrption about the class (if any)
     const accessSpecifier = doclet.access;          // access specifier of the code block
@@ -127,16 +138,16 @@ function parseDoclet(doclet, namespace) {
     let textTags = [];
     let infoBoxes = [];
     let docletTags = doclet.tags;
-    let { memberof } = doclet;
+    // let { memberof } = doclet;
     let extendsItem = doclet.extends;
 
     if (Array.isArray(extendsItem) && extendsItem.length > 0) {
         extendsItem = extendsItem[0];
     }
 
-    if (memberof && NAMESPACES.includes(memberof.toLowerCase())) {
-        namespace.memberof = memberof.toLowerCase();
-    }
+    // if (memberof && NAMESPACES.includes(memberof.toLowerCase())) {
+    //     namespace.memberof = memberof.toLowerCase();
+    // }
 
     // Append @text block
     if (docletTags) {
@@ -165,16 +176,43 @@ function parseDoclet(doclet, namespace) {
             if (returnType) {
                 returnType = returnType.join(' ').replace(/</gi, '&lt;').replace(/>/gi, '&gt;').replace(/\./gi, ' ');
                 returnType = `[${returnType}](${returnType})`;
-                name = `### <a name=${name}></a> ${name}(${paramnames}) → {${returnType}}`;
+                if (sameLevel) {
+                    // name = `<h2><span style="font-family: Source Code Pro;font-weight:500;font-size:24px"><a name=${name}></a> ${name}(${paramnames}) → {${returnType}} </span></h2>`;
+                    name = `<h2><span style="font-family: Source Code Pro;font-weight:500;font-size:24px;color: #eb5757"><a name=${name}></a> ${name} </span></h2>`;
+                } else {
+                    // name = `### <a name=${name}></a> ${name}(${paramnames}) → {${returnType}}`;
+                    name = `### <a name=${name}></a> ${name}`;
+                }
             } else {
-                name = `### <a name=${name}></a> ${name}(${paramnames})`;
+                if (sameLevel) {
+                    // name = `## <a name=${name}></a> ${name}(${paramnames})`;
+                    name = `## <a name=${name}></a> ${name}`;
+                } else {
+                    // name = `### <a name=${name}></a> ${name}(${paramnames})`;
+                    name = `### <a name=${name}></a> ${name}`;
+                }
             }
         }
         if (kind === 'member' && scope && scope === 'static') {
-            name = `### <a name=${name}></a> static ${name}`;
+            if (sameLevel) {
+                name = `## <a name=${name}></a> static ${name}`;
+            } else {
+                name = `### <a name=${name}></a> static ${name}`;
+            }
         }
 
         const description = classDescription || itemDescription;
+        const shortName = doclet.longname.split(':')[1];
+        if (shortName && doclet.name.toLowerCase() === shortName.toLowerCase()) {
+            name = '';
+        } else {
+            /* eslint no-lonely-if: 0 */
+            if (!name.match(/</g)) {
+                name = `## <a name=${name}></a> <span style="font-family: Source Code Pro; font-weight: 500;color: #eb5757;">${name}</span>`;
+            }
+            // name = `## <a name=${name}></a>`;
+            // name = `<h2 style="margin-top: 0"><span style="font-size: 18px;font-weight:600;font-family: Source Code Pro;">${name}</span></h2>`;
+        }
         if (description) {
             if (extendsItem) {
                 sections.push({
@@ -186,6 +224,79 @@ function parseDoclet(doclet, namespace) {
                 sections.push({
                     type: 'markdown-section',
                     content: `${name}\n\n${description.replace(/{@link\s+.*?}/gi, replaceLink)}`,
+                });
+            }
+
+            // Append code block
+            if (examples && examples.length) {
+                examples.map((example) => {
+                    example = example.trim();
+                    // field to store preamble
+                    let preamble = [];
+                    // get the lines
+                    let lines = example.split('\n');
+                    let preambleStart = 0;
+                    let preambleEnd = 0;
+                    let count = 0;
+
+                    // get the index of the preamble tags
+                    lines.forEach((line, lIdx) => {
+                        line = line.trim();
+                        if (line === '//@preamble_start') {
+                            preambleStart = lIdx;
+                        }
+                        if (line === '//@preamble_end') {
+                            preambleEnd = lIdx;
+
+                            // get the preamble content if it exists
+                            if (preambleEnd - preambleStart) {
+                                for (let i = preambleStart + 1; i < preambleEnd; i += 1) {
+                                    if (count === 0) {
+                                        preamble.push({
+                                            preTag: `${lines[i]}`
+                                        });
+                                    } else {
+                                        preamble.push({
+                                            endTag: `${lines[i]}`
+                                        });
+                                    }
+                                }
+                                ++count;
+                            }
+                        }
+                    });
+
+                    preamble.forEach((pre) => {
+                        if (pre.preTag) {
+                            let index = lines.indexOf(pre.preTag);
+                            lines.splice(index, 1);
+                        } else {
+                            let index = lines.indexOf(pre.endTag);
+                            lines.splice(index, 1);
+                        }
+                    });
+
+                    /**
+                     * function to filter the preamble tags in lines
+                     * @param  {Array} array lines array
+                     * @param  {string} what string to be removed
+                     * @return {Array} the modified array
+                     */
+                    function without(array, what) {
+                        return array.filter(element => element.trim() !== what);
+                    }
+
+                    let linesWithoutStart = without(lines, '//@preamble_start');
+                    let linesWithoutEnd = without(linesWithoutStart, '//@preamble_end');
+
+                    const content = linesWithoutEnd.join('\n');
+
+                    sections.push({
+                        type: 'code-section',
+                        content,
+                        preamble,
+                        preambleWithContent: example,
+                    });
                 });
             }
 
@@ -201,63 +312,6 @@ function parseDoclet(doclet, namespace) {
                 sections.push({
                     type: 'markdown-section',
                     content: paramString,
-                });
-            }
-
-            // Append code block
-            if (examples && examples.length) {
-                examples.map((example) => {
-                    example = example.trim();
-                    // field to store preamble
-                    let preamble = [];
-                    // get the lines
-                    let lines = example.split('\n');
-                    let preambleStart = 0;
-                    let preambleEnd = 0;
-
-                    // get the index of the preamble tags
-                    lines.forEach((line, lIdx) => {
-                        if (line === '//@preamble_start') {
-                            preambleStart = lIdx;
-                        }
-                        if (line === '//@preamble_end') {
-                            preambleEnd = lIdx;
-
-                            // get the preamble content if it exists
-                            if (preambleEnd - preambleStart) {
-                                for (let i = preambleStart + 1; i < preambleEnd; i += 1) {
-                                    preamble.push(`${lines[i]}`);
-                                }
-                            }
-                        }
-                    });
-
-                    preamble.forEach((pre) => {
-                        let index = lines.indexOf(pre);
-                        lines.splice(index, 1);
-                    });
-
-                    /**
-                     * function to filter the preamble tags in lines
-                     * @param  {Array} array lines array
-                     * @param  {string} what string to be removed
-                     * @return {Array} the modified array
-                     */
-                    function without(array, what) {
-                        return array.filter(element => element !== what);
-                    }
-
-                    let linesWithoutStart = without(lines, '//@preamble_start');
-                    let linesWithoutEnd = without(linesWithoutStart, '//@preamble_end');
-
-                    const content = linesWithoutEnd.join('\n');
-
-                    sections.push({
-                        type: 'code-section',
-                        content,
-                        preamble,
-                        preambleWithContent: example,
-                    });
                 });
             }
 
@@ -304,8 +358,14 @@ function parseDoclet(doclet, namespace) {
                         desc = desc.replace(/(```)([\s\S]*?)(```)/gm, backTickText);
                     }
                 }
-                let returnVal =
-                `<a name=${returnValue[0].type.names[0]}></a><p class="sub-header">Returns:</p>\n\n <span style="font-family: 'Source Code Pro';margin-left: 2%;">${returnValue[0].type.names.join(' ').replace(/</gi, '&lt;').replace(/>/gi, '&gt;').replace(/\./gi, '')}:</span>`;
+                let returnedValue = returnValue[0].type.names.join(' ').replace(/</gi, '&lt;').replace(/>/gi, '&gt;').replace(/\./gi, '');
+                let noReturnLink = ['string', 'object', 'array', 'number'];
+                let returnVal;
+                if (!noReturnLink.includes(returnedValue.toLowerCase())) {
+                    returnVal = `<a name=${returnValue[0].type.names[0]}></a><p class="sub-header">Returns:</p>\n\n <span style="font-family: 'Source Code Pro';margin-left: 2%;">[${returnedValue}](${returnedValue}):&nbsp;</span>`;
+                } else {
+                    returnVal = `<a name=${returnValue[0].type.names[0]}></a><p class="sub-header">Returns:</p>\n\n <span style="font-family: 'Source Code Pro';margin-left: 2%;">${returnedValue}:&nbsp;</span>`;
+                }
                 if (desc) {
                     returnVal = `${returnVal}${desc}`;
                 }
@@ -332,8 +392,6 @@ exports.defineTags = (dictionary) => {
 exports.defineTags = function(dictionary) {
     dictionary.defineTag('text', {
         onTagged(doclet, tag) {
-            // console.log(doclet);
-            // console.log(tag);
             if (!doclet.text) {
                 doclet.text = [];
             }
@@ -347,6 +405,9 @@ exports.defineTags = function(dictionary) {
         }
     });
 };
+
+let segmentArray = [];
+
 exports.handlers = {
     /**
      * This function executes after jsdoc has parsed all files and created doclets
@@ -366,29 +427,31 @@ exports.handlers = {
             }
             fileMap[fileName].push(item);
         });
+
+        function getSegments(segmentTag) {
+            return segmentTag
+                            .some(obj => obj.originalTitle.toLowerCase().trim() === 'segment');
+        }
         // create parsed yaml for each file
         Object.keys(fileMap).forEach((fileName) => {
-            const perFileDoclets = fileMap[fileName];
+            let perFileDoclets = fileMap[fileName];
 
             // Filter out the doclets with no description
-            const filteredDoclets = perFileDoclets.filter(doclet => (doclet.description ? doclet : null));
+            perFileDoclets = perFileDoclets.filter(doclet => (doclet.description ? doclet : null));
+            const segmentDocs = perFileDoclets.filter(doclet =>
+                doclet.tags && doclet.tags.length && getSegments(doclet.tags)
+            );
+            segmentArray = segmentArray.concat(segmentDocs);
+
+            const docsWithoutSegments = perFileDoclets.filter(obj => segmentArray.indexOf(obj) === -1);
+            // const filteredDoclets = docsWithoutSegments.filter(doclet => (doclet.description ? doclet : null));
             // Object to store object parameters which may have nested keys
             let namespace = {};
-
-            let parsed = filteredDoclets.map(doclet => parseDoclet(doclet, namespace)).filter(item => item);
+            let parsed = docsWithoutSegments.map(doclet => parseDoclet(doclet, namespace)).filter(item => item);
             parsed = parsed.reduce((accum, value) => [...accum, ...value], []);
 
-            let documentName = fileName.split('.')[0];
-            documentName = documentName[0].toUpperCase() + documentName.slice(1);
-
-            // Create master section to be converted to a YAML file
-            const fileDump = {
-                title: documentName,
-                description: 'Documented Methods',
-                sections: parsed,
-            };
-            // convert to YAML
-            const yml = converter.stringify(fileDump);
+            // let documentName = fileName.split('.')[0];
+            // documentName = documentName[0].toUpperCase() + documentName.slice(1);
 
             // get the path directory path where files will be written
             let destination = config.opts.yaml;
@@ -405,6 +468,15 @@ exports.handlers = {
             // if (namespace.memberof) {
             //     destination = `${destination}${namespace.memberof}`;
             // }
+            // Create master section to be converted to a YAML file
+            temp[0] = temp[0].charAt(0).toUpperCase() + temp[0].substr(1).toLowerCase();
+            const fileDump = {
+                title: temp[0],
+                description: 'Documented Methods',
+                sections: parsed,
+            };
+            // convert to YAML
+            const yml = converter.stringify(fileDump);
             if (fileDump.sections.length) {
                 // write the file
                 fs.writeFile(`${destination}${ymlFileName}`, yml, (err) => {
@@ -414,5 +486,38 @@ exports.handlers = {
                 });
             }
         });
+
+        // Process the segment file
+        const segmentObj = {};
+        segmentArray.forEach((segment) => {
+            segment.tags.forEach((tag) => {
+                if (tag.originalTitle === 'segment') {
+                    if (segmentObj.hasOwnProperty(tag.value)) {
+                        segmentObj[tag.value].push(segment);
+                    }
+                    else {
+                        segmentObj[tag.value] = [];
+                        segmentObj[tag.value].push(segment);
+                    }
+                }
+            });
+        });
+
+        for (let obj in segmentObj) {
+            const sameLevel = true;
+            let objParsed = segmentObj[obj].map(doclet => parseDoclet(doclet, sameLevel)).filter(item => item);
+            objParsed = objParsed.reduce((accum, value) => [...accum, ...value], []);
+            const fileDump = {
+                title: obj,
+                description: 'Documented Methods',
+                sections: objParsed,
+            };
+            const yml = converter.stringify(fileDump);
+            fs.writeFile(`./segments/api-${obj}.yml`, yml, (err) => {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        }
     }
 };

@@ -5,7 +5,7 @@ import { isArrEqual } from '../utils/helper';
 
 /**
  * Union operation can be termed as vertical stacking of all rows from both the DataModel instances, provided that both
- * of the {@link DataModel} instances should have same column names.
+ * of the {@link /muze/docs/api-datamodel | DataModel} instances should have same column names.
  *
  * @example
  *  //@preamble_start
@@ -36,8 +36,7 @@ import { isArrEqual } from '../utils/helper';
  * {@link /muze/api/datamodel/union | chained operator}.
  *
  * @public
- * @namespace DataModel
- * @segment Operator
+ * @segment Operators
  *
  * @param {DataModel} topDM One of the two operands of union. Instance of DataModel.
  * @param {DataModel} bottomDM Another operands of union. Instance of DataModel.

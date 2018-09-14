@@ -1,0 +1,7 @@
+---
+  title: "Enums"
+  description: "Documented Methods"
+  sections: 
+    - 
+      type: "markdown-section"
+      content: "## <a name=FilteringMode></a> <span style=\"font-family: Source Code Pro; font-weight: 500;color: #eb5757;\">FilteringMode</span>\n\nFilteringMode determines if resultant DataModel should be created from selection set or rejection set.\n\nThe following modes are available\n- `NORMAL`: Only entries from selection set are included in the resulatant DataModel instance\n- `INVERSE`: Only entries from rejection set are included in the resulatant DataModel instance\n- `ALL`: Both the entries from selection and rejection set are returned in two different DataModel instance\n\nYou can access this enums from `DataModel.FilteringMode`."
