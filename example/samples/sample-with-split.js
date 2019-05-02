@@ -44,21 +44,23 @@ d3.json('./data/cars.json', (data) => {
     const splitDms = datamodel.splitByRow(['Year']);
     console.log(splitDms);
 
-    const splitDmsMultipleDimensions = datamodel.splitByRow(['Origin', 'Cylinders']);
+
+    const splitDmsMultipleDimensions = datamodel.splitByRow(['Year', 'Cylinders']);
     console.log(splitDmsMultipleDimensions);
 
     const dmWithCondition =   datamodel.splitByRow(['Origin', 'Cylinders'], (fields)=>fields.Cylinders.value !== '6');
     console.log(dmWithCondition);
 
-    const dmWithConditionInverse =   datamodel.splitByRow(['Origin', 'Cylinders'], (fields)=>fields.Cylinders.value !== '6', {mode: 'inverse'});
+    const dmWithConditionInverse =   datamodel.splitByRow(['Origin', 'Cylinders'], (fields)=>fields.Cylinders.value !== '6', {mode: undefined});
     console.log(dmWithConditionInverse);
+    const dmWithConditionInverse2 =   datamodel.select( (fields)=>fields.Cylinders.value !== '6', {mode: undefined});
+    console.log(dmWithConditionInverse2);
 
-    const projectDm = datamodel.splitByColumn(['Origin'], [['Acceleration'], ['Horsepower']]);
+    const projectDm = datamodel.splitByColumn([['Acceleration'], ['Horsepower']], ['Origin']);
     console.log(projectDm);
 
 
     const compose = window.DataModel.Operators.compose;
     const splitByRow = window.DataModel.Operators.splitByRow;
-    // const composedDM = compose(splitByRow(['Origin']))
-    // console.log(composedDM(datamodel))
+
 });

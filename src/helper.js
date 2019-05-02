@@ -138,7 +138,6 @@ export const rowSplitDiffsetIterator = (rowDiffset, checker, mode, dimensionArr,
 export const selectHelper = (clonedDm, selectFn, config, sourceDm, iterator) => {
     let cachedStore = {};
     let cloneProvider = () => sourceDm.detachedRoot();
-
     const { mode } = config;
     const rowDiffset = clonedDm._rowDiffset;
     const fields = clonedDm.getPartialFieldspace().fields;
@@ -295,7 +294,9 @@ export const addDiffsetToClonedDm = (clonedDm, rowDiffset, sourceDm, selectConfi
 export const cloneWithSelect = (sourceDm, selectFn, selectConfig, cloneConfig) => {
     let extraCloneDm = {};
 
-    const { mode } = selectConfig;
+    let { mode } = selectConfig;
+    mode = mode || FilteringMode.NORMAL;
+
     const cloned = sourceDm.clone(cloneConfig.saveChild);
     const setOfRowDiffsets = selectHelper(
         cloned,
